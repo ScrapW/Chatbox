@@ -54,20 +54,6 @@ class OSC{
             sender.close()
             sender = OSCPortOut(inetAddress, oscPort)
         }
-    var hostName = ""
-        set (value){
-            field = value
-
-            CoroutineScope(Dispatchers.Main).launch {
-                withContext(Dispatchers.IO) {
-                    inetAddress = InetAddress.getByName(value)
-                }
-            }
-
-
-            sender.close()
-            sender = OSCPortOut(inetAddress, oscPort)
-        }
     var oscPort = 9000
         set (value){
             field = value
@@ -105,7 +91,7 @@ fun IpInputBox(modifier : Modifier = Modifier) {
                 onDone = {
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.IO) {
-                            osc.hostName = text
+                            osc.ipAddress = text
                         }
                     }
                 }
