@@ -37,7 +37,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             ChatboxTheme {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
                     ChatScreen()
                 }
             }
@@ -45,36 +48,52 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-class OSC{
+class Chatbox {
     var ipAddress = "127.0.0.1"
-        set (value){
+        set(value) {
             field = value
             inetAddress = InetAddress.getByName(value)
-            Log.d("DDD",inetAddress.hostAddress)
-            sender.close()
-            sender = OSCPortOut(inetAddress, oscPort)
+            refreshSender()
         }
+
     var oscPort = 9000
-        set (value){
+        set(value) {
             field = value
-            sender.close()
-            sender = OSCPortOut(inetAddress, oscPort)
+            refreshSender()
         }
 
     private var inetAddress = InetAddress.getByName(ipAddress)
     private var sender = OSCPortOut(inetAddress, 9000)
 
+    var typing = false
+        set(value) {
+            field = value
+            CoroutineScope(Dispatchers.Main).launch {
+                withContext(Dispatchers.IO) {
+                    val message = OSCMessage("/chatbox/typing", listOf(value))
+                    sender.send(message)
+                }
+            }
+        }
+
+    private fun refreshSender() {
+        sender.close()
+        sender = OSCPortOut(inetAddress, oscPort)
+    }
+
     fun sendOscMessage(text: String = "Test!") {
         val message = OSCMessage("/chatbox/input", listOf(text, true))
         sender.send(message)
     }
+
 }
 
-val osc = OSC()
+val chatbox = Chatbox()
 
 @Composable
-fun IpInputBox(modifier : Modifier = Modifier) {
-    val (text, setText) = remember { mutableStateOf("") }
+fun IpInputBox(modifier: Modifier = Modifier) {
+    val (text, setText) = remember { mutableStateOf("127.0.0.1") }
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -91,25 +110,29 @@ fun IpInputBox(modifier : Modifier = Modifier) {
                 onDone = {
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.IO) {
-                            osc.ipAddress = text
+                            chatbox.ipAddress = text
                         }
                     }
                 }
-            ),
+            )
         )
     }
 }
 
 @Composable
-fun MessageInputBox(modifier : Modifier = Modifier) {
+fun MessageInputBox(modifier: Modifier = Modifier) {
     val (text, setText) = remember { mutableStateOf("") }
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
             value = text,
-            onValueChange = setText,
+            onValueChange = {
+                setText(it)
+                chatbox.typing = it.isNotEmpty()
+            },
             modifier = Modifier.weight(1f),
             placeholder = { Text("Enter your message here") },
             keyboardOptions = KeyboardOptions(
@@ -119,19 +142,20 @@ fun MessageInputBox(modifier : Modifier = Modifier) {
                 onSend = {
                     CoroutineScope(Dispatchers.Main).launch {
                         withContext(Dispatchers.IO) {
-                            osc.sendOscMessage(text)
+                            chatbox.sendOscMessage(text)
+                            chatbox.typing = false
                             setText("")
                         }
                     }
                 }
-            ),
+            )
         )
 
         Button(
             onClick = {
                 CoroutineScope(Dispatchers.Main).launch {
                     withContext(Dispatchers.IO) {
-                        osc.sendOscMessage(text)
+                        chatbox.sendOscMessage(text)
                         setText("")
                     }
                 }
@@ -159,7 +183,7 @@ fun ChatScreen() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    ChatboxTheme{
+    ChatboxTheme {
         ChatScreen()
     }
 }
