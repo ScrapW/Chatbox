@@ -15,7 +15,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -92,7 +92,7 @@ val chatbox = Chatbox()
 
 @Composable
 fun IpInputBox(modifier: Modifier = Modifier) {
-    val (text, setText) = remember { mutableStateOf("127.0.0.1") }
+    val (text, setText) = rememberSaveable { mutableStateOf("127.0.0.1") }
 
     Row(
         modifier = modifier,
@@ -121,7 +121,7 @@ fun IpInputBox(modifier: Modifier = Modifier) {
 
 @Composable
 fun MessageInputBox(modifier: Modifier = Modifier) {
-    val (text, setText) = remember { mutableStateOf("") }
+    val (text, setText) = rememberSaveable { mutableStateOf("") }
 
     Row(
         modifier = modifier,
