@@ -25,10 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.illposed.osc.OSCMessage
 import com.illposed.osc.transport.udp.OSCPortOut
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.net.InetAddress
 
 class MainActivity : ComponentActivity() {
@@ -62,6 +59,8 @@ class Chatbox {
             refreshSender()
         }
 
+    var realtimeUpdate = true
+
     private var inetAddress = InetAddress.getByName(ipAddress)
     private var sender = OSCPortOut(inetAddress, 9000)
 
@@ -84,8 +83,44 @@ class Chatbox {
     fun sendOscMessage(text: String = "Test!") {
         val message = OSCMessage("/chatbox/input", listOf(text, true))
         sender.send(message)
+        latestMsgTimestamp = System.currentTimeMillis()
     }
 
+    private var realtimeMsgJob: Job? = null
+    private var latestMsgTimestamp: Long = 0
+    private var realtimeMsgInterval = 1500
+
+
+    fun sendRealtimeMessage(text: String = "Test!") {
+        realtimeMsgJob?.cancel()
+
+        Log.d(
+            "Chatbox",
+            latestMsgTimestamp.toString() + "  " + System.currentTimeMillis()
+                .toString() + "  " + (System.currentTimeMillis() - latestMsgTimestamp).toString()
+        )
+
+        realtimeMsgJob = CoroutineScope(Dispatchers.Main).launch {
+            withContext(Dispatchers.IO) {
+
+                val timeStamp = System.currentTimeMillis()
+
+                if (timeStamp - latestMsgTimestamp < realtimeMsgInterval) {
+                    delay(realtimeMsgInterval - (timeStamp - latestMsgTimestamp))
+                }
+
+                var message = OSCMessage("/chatbox/input", listOf(text, true))
+                sender.send(message)
+
+
+                message = OSCMessage("/chatbox/typing", listOf(text.isNotEmpty()))
+                sender.send(message)
+
+                latestMsgTimestamp = System.currentTimeMillis()
+            }
+        }
+
+    }
 }
 
 val chatbox = Chatbox()
@@ -132,6 +167,7 @@ fun MessageInputBox(modifier: Modifier = Modifier) {
             onValueChange = {
                 setText(it)
                 chatbox.typing = it.isNotEmpty()
+                if (chatbox.realtimeUpdate) chatbox.sendRealtimeMessage(it)
             },
             modifier = Modifier.weight(1f),
             placeholder = { Text("Enter your message here") },
