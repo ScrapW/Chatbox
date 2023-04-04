@@ -5,12 +5,21 @@ import com.illposed.osc.OSCMessage
 import com.illposed.osc.transport.udp.OSCPortOut
 import kotlinx.coroutines.*
 import java.net.InetAddress
+import java.net.UnknownHostException
 
 class Chatbox {
     var ipAddress = "127.0.0.1"
         set(value) {
             field = value
-            inetAddress = InetAddress.getByName(value)
+            CoroutineScope(Dispatchers.IO).launch {
+                withContext(Dispatchers.IO) {
+                    try {
+                        inetAddress = InetAddress.getByName(value)
+                    } catch (e: UnknownHostException) {
+                        Log.d("IP", "Can't resolve $value")
+                    }
+                }
+            }
         }
 
     var oscPort = 9000
