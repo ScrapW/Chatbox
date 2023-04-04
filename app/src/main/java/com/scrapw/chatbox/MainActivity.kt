@@ -1,7 +1,6 @@
 package com.scrapw.chatbox
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
@@ -22,11 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.illposed.osc.OSCMessage
-import com.illposed.osc.transport.udp.OSCPortOut
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
-import kotlinx.coroutines.*
-import java.net.InetAddress
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,84 +37,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-    }
-}
-
-class Chatbox {
-    var ipAddress = "127.0.0.1"
-        set(value) {
-            field = value
-            inetAddress = InetAddress.getByName(value)
-            refreshSender()
-        }
-
-    var oscPort = 9000
-        set(value) {
-            field = value
-            refreshSender()
-        }
-
-    var realtimeUpdate = true
-
-    private var inetAddress = InetAddress.getByName(ipAddress)
-    private var sender = OSCPortOut(inetAddress, 9000)
-
-    var typing = false
-        set(value) {
-            field = value
-            CoroutineScope(Dispatchers.Main).launch {
-                withContext(Dispatchers.IO) {
-                    val message = OSCMessage("/chatbox/typing", listOf(value))
-                    sender.send(message)
-                }
-            }
-        }
-
-    private fun refreshSender() {
-        sender.close()
-        sender = OSCPortOut(inetAddress, oscPort)
-    }
-
-    fun sendOscMessage(text: String = "Test!") {
-        val message = OSCMessage("/chatbox/input", listOf(text, true))
-        sender.send(message)
-        latestMsgTimestamp = System.currentTimeMillis()
-    }
-
-    private var realtimeMsgJob: Job? = null
-    private var latestMsgTimestamp: Long = 0
-    private var realtimeMsgInterval = 1500
-
-
-    fun sendRealtimeMessage(text: String = "Test!") {
-        realtimeMsgJob?.cancel()
-
-        Log.d(
-            "Chatbox",
-            latestMsgTimestamp.toString() + "  " + System.currentTimeMillis()
-                .toString() + "  " + (System.currentTimeMillis() - latestMsgTimestamp).toString()
-        )
-
-        realtimeMsgJob = CoroutineScope(Dispatchers.Main).launch {
-            withContext(Dispatchers.IO) {
-
-                val timeStamp = System.currentTimeMillis()
-
-                if (timeStamp - latestMsgTimestamp < realtimeMsgInterval) {
-                    delay(realtimeMsgInterval - (timeStamp - latestMsgTimestamp))
-                }
-
-                var message = OSCMessage("/chatbox/input", listOf(text, true))
-                sender.send(message)
-
-
-                message = OSCMessage("/chatbox/typing", listOf(text.isNotEmpty()))
-                sender.send(message)
-
-                latestMsgTimestamp = System.currentTimeMillis()
-            }
-        }
-
     }
 }
 
@@ -143,11 +60,7 @@ fun IpInputBox(modifier: Modifier = Modifier) {
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        withContext(Dispatchers.IO) {
-                            chatbox.ipAddress = text
-                        }
-                    }
+                    chatbox.ipAddress = text
                 }
             )
         )
@@ -166,8 +79,11 @@ fun MessageInputBox(modifier: Modifier = Modifier) {
             value = text,
             onValueChange = {
                 setText(it)
-                chatbox.typing = it.isNotEmpty()
-                if (chatbox.realtimeUpdate) chatbox.sendRealtimeMessage(it)
+                if (chatbox.realtimeUpdate) {
+                    chatbox.sendRealtimeMessage(it)
+                } else {
+                    chatbox.typing = it.isNotEmpty()
+                }
             },
             modifier = Modifier.weight(1f),
             placeholder = { Text("Enter your message here") },
@@ -176,25 +92,17 @@ fun MessageInputBox(modifier: Modifier = Modifier) {
             ),
             keyboardActions = KeyboardActions(
                 onSend = {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        withContext(Dispatchers.IO) {
-                            chatbox.sendOscMessage(text)
-                            chatbox.typing = false
-                            setText("")
-                        }
-                    }
+                    chatbox.sendMessage(text)
+                    chatbox.typing = false
+                    setText("")
                 }
             )
         )
 
         Button(
             onClick = {
-                CoroutineScope(Dispatchers.Main).launch {
-                    withContext(Dispatchers.IO) {
-                        chatbox.sendOscMessage(text)
-                        setText("")
-                    }
-                }
+                chatbox.sendMessage(text)
+                setText("")
             },
             modifier = Modifier.size(48.dp),
             content = {

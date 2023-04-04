@@ -1,0 +1,69 @@
+package com.scrapw.chatbox
+
+import android.util.Log
+import com.illposed.osc.OSCMessage
+import com.illposed.osc.transport.udp.OSCPortOut
+import kotlinx.coroutines.*
+import java.net.InetAddress
+
+class Chatbox {
+    var ipAddress = "127.0.0.1"
+        set(value) {
+            field = value
+            inetAddress = InetAddress.getByName(value)
+        }
+
+    var oscPort = 9000
+    var realtimeUpdate = true
+
+    private var inetAddress = InetAddress.getByName(ipAddress)
+
+    var typing = false
+        set(value) {
+            field = value
+            sendOscMessage("/chatbox/typing", listOf(value))
+        }
+
+    private fun sendOscMessage(address: String, arguments: List<Any?>, delay: Long = 0) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val message = OSCMessage(address, arguments)
+            val sender = OSCPortOut(inetAddress, oscPort)
+            delay(delay)
+            sender.send(message)
+            sender.close()
+        }
+    }
+
+    fun sendMessage(text: String) {
+        sendOscMessage("/chatbox/input", listOf(text, true))
+        latestMsgTimestamp = System.currentTimeMillis()
+    }
+
+    private var realtimeMsgJob: Job? = null
+    private var latestMsgTimestamp: Long = 0
+    private var realtimeMsgInterval = 1500
+
+
+    fun sendRealtimeMessage(text: String) {
+        realtimeMsgJob?.cancel()
+
+        Log.d(
+            "Chatbox",
+            "$latestMsgTimestamp  ${System.currentTimeMillis()}  ${(System.currentTimeMillis() - latestMsgTimestamp)}"
+        )
+
+        realtimeMsgJob = CoroutineScope(Dispatchers.IO).launch {
+            val timeStamp = System.currentTimeMillis()
+
+            if (timeStamp - latestMsgTimestamp < realtimeMsgInterval) {
+                delay(realtimeMsgInterval - (timeStamp - latestMsgTimestamp))
+            }
+
+            sendOscMessage("/chatbox/input", listOf(text, true))
+            sendOscMessage("/chatbox/typing", listOf(text.isNotEmpty()), 50)
+
+            latestMsgTimestamp = System.currentTimeMillis()
+        }
+    }
+}
