@@ -23,7 +23,7 @@ class Chatbox {
         }
 
     var oscPort = 9000
-    var realtimeUpdate = true
+    var realtimeMsg = false
 
     private var inetAddress = InetAddress.getByName(ipAddress)
 

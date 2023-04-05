@@ -10,6 +10,8 @@ class ChatboxViewModel : ViewModel() {
     val ipAddress = mutableStateOf(chatbox.ipAddress)
     val messageText = mutableStateOf("")
 
+    val isRealtimeMsgEnabled = mutableStateOf(chatbox.realtimeMsg)
+
     fun onIpAddressChange(ip: String) {
         chatbox.ipAddress = ip
         ipAddress.value = ip
@@ -17,11 +19,16 @@ class ChatboxViewModel : ViewModel() {
 
     fun onMessageTextChange(text: String) {
         messageText.value = text
-        if (chatbox.realtimeUpdate) {
+        if (chatbox.realtimeMsg) {
             chatbox.sendRealtimeMessage(text)
         } else {
             chatbox.typing = text.isNotEmpty()
         }
+    }
+
+    fun onRealtimeMsgChanged(isChecked: Boolean) {
+        isRealtimeMsgEnabled.value = isChecked
+        chatbox.realtimeMsg = isChecked
     }
 
     fun sendMessage() {
