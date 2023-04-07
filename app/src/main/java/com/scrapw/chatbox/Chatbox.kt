@@ -7,8 +7,8 @@ import kotlinx.coroutines.*
 import java.net.InetAddress
 import java.net.UnknownHostException
 
-class Chatbox {
-    var ipAddress = "127.0.0.1"
+class Chatbox(ipAddress: String, realtimeMsg: Boolean) {
+    var ipAddress = ipAddress
         set(value) {
             field = value
             CoroutineScope(Dispatchers.IO).launch {
@@ -23,9 +23,13 @@ class Chatbox {
         }
 
     var oscPort = 9000
-    var realtimeMsg = false
+    var realtimeMsg = realtimeMsg
 
-    private var inetAddress = InetAddress.getByName(ipAddress)
+    init {
+        this.ipAddress = ipAddress
+    }
+
+    private lateinit var inetAddress: InetAddress
 
     var typing = false
         set(value) {

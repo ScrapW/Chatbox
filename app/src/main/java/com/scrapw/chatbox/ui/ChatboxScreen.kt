@@ -1,12 +1,16 @@
 package com.scrapw.chatbox.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -17,7 +21,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
 
 @Composable
-fun IpInputBox(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Modifier) {
+fun IpInputBox(
+    chatboxViewModel: ChatboxViewModel,
+    uiState: ChatboxUiState,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -34,7 +42,7 @@ fun IpInputBox(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Modifier
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    chatboxViewModel.onIpAddressChange(chatboxViewModel.ipAddress.value)
+                    chatboxViewModel.ipAddressApply()
                 }
             )
         )
@@ -42,7 +50,11 @@ fun IpInputBox(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Modifier
 }
 
 @Composable
-fun MessageInputBox(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Modifier) {
+fun MessageInputBox(
+    chatboxViewModel: ChatboxViewModel,
+    uiState: ChatboxUiState,
+    modifier: Modifier = Modifier
+) {
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -81,13 +93,17 @@ fun MessageInputBox(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Mod
 }
 
 @Composable
-fun Option(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Modifier) {
+fun Option(
+    chatboxViewModel: ChatboxViewModel,
+    uiState: ChatboxUiState,
+    modifier: Modifier = Modifier
+) {
     Row(
         Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            checked = chatboxViewModel.isRealtimeMsgEnabled.value,
+            checked = uiState.isRealtimeMsg,
             onCheckedChange = { isChecked ->
                 chatboxViewModel.onRealtimeMsgChanged(isChecked)
             },
@@ -99,11 +115,17 @@ fun Option(chatboxViewModel: ChatboxViewModel, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChatScreen(chatboxViewModel: ChatboxViewModel = viewModel()) {
+fun ChatScreen(
+    modifier: Modifier = Modifier,
+    chatboxViewModel: ChatboxViewModel = viewModel(
+        factory = ChatboxViewModel.Factory
+    )
+) {
+    val uiState = chatboxViewModel.uiState.collectAsState().value
     Column() {
-        IpInputBox(chatboxViewModel)
-        MessageInputBox(chatboxViewModel)
-        Option(chatboxViewModel)
+        IpInputBox(chatboxViewModel, uiState, modifier)
+        MessageInputBox(chatboxViewModel, uiState, modifier)
+        Option(chatboxViewModel, uiState, modifier)
     }
 }
 
