@@ -31,9 +31,9 @@ fun IpInputBox(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
-            value = chatboxViewModel.ipAddress.value,
+            value = chatboxViewModel.ipAddressText.value,
             onValueChange = {
-                chatboxViewModel.onIpAddressChange(it)
+                chatboxViewModel.onIpAddressChange(it.text)
             },
             modifier = Modifier.weight(1f),
             placeholder = { Text("Enter your ip here") },
