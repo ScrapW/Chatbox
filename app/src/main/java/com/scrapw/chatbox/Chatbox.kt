@@ -49,7 +49,7 @@ class Chatbox(ipAddress: String, realtimeMsg: Boolean) {
     }
 
     fun sendMessage(text: String) {
-        sendOscMessage("/chatbox/input", listOf(text, true))
+        sendOscMessage("/chatbox/input", listOf(text, true, true))
         latestMsgTimestamp = System.currentTimeMillis()
     }
 
@@ -73,7 +73,7 @@ class Chatbox(ipAddress: String, realtimeMsg: Boolean) {
                 delay(realtimeMsgInterval - (timeStamp - latestMsgTimestamp))
             }
 
-            sendOscMessage("/chatbox/input", listOf(text, true))
+            sendOscMessage("/chatbox/input", listOf(text, true, false))
             sendOscMessage("/chatbox/typing", listOf(text.isNotEmpty()), 50)
 
             latestMsgTimestamp = System.currentTimeMillis()
