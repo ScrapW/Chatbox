@@ -11,46 +11,63 @@ import java.io.IOException
 class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     private companion object {
         const val TAG = "UserPreferencesRepo"
+        const val ERROR_READ = "Error reading preferences."
 
         val IP_ADDRESS = stringPreferencesKey("ip_address")
         val IS_REALTIME_MSG = booleanPreferencesKey("is_realtime_msg")
     }
 
-    val ipAddress: Flow<String> = dataStore.data
-        .catch {
-            if (it is IOException) {
-                Log.e(TAG, "Error reading preferences.", it)
-                emit(emptyPreferences())
-            } else {
-                throw it
-            }
-        }
-        .map { preferences ->
-            preferences[IP_ADDRESS] ?: "127.0.0.1"
-        }
+    val ipAddress = getString(IP_ADDRESS, "127.0.0.1")
 
-    suspend fun saveIpAddress(ipAddress: String) {
+    suspend fun saveIpAddress(value: String) {
+        saveString(IP_ADDRESS, value)
+    }
+
+    val isRealtimeMsg = getBoolean(IS_REALTIME_MSG, false)
+
+    suspend fun saveIsRealtimeMsg(value: Boolean) {
+        saveBoolean(IS_REALTIME_MSG, value)
+    }
+
+    private fun getString(key: Preferences.Key<String>, defaultValue: String): Flow<String> {
+        return dataStore.data
+            .catch {
+                if (it is IOException) {
+                    Log.e(TAG, ERROR_READ, it)
+                    emit(emptyPreferences())
+                } else {
+                    throw it
+                }
+            }
+            .map { preferences ->
+                preferences[key] ?: defaultValue
+            }
+    }
+
+    private suspend fun saveString(key: Preferences.Key<String>, value: String) {
         dataStore.edit { preferences ->
-            preferences[IP_ADDRESS] = ipAddress
+            preferences[key] = value
         }
     }
 
-    val isRealtimeMsg: Flow<Boolean> = dataStore.data
-        .catch {
-            if (it is IOException) {
-                Log.e(TAG, "Error reading preferences.", it)
-                emit(emptyPreferences())
-            } else {
-                throw it
+    private fun getBoolean(key: Preferences.Key<Boolean>, defaultValue: Boolean): Flow<Boolean> {
+        return dataStore.data
+            .catch {
+                if (it is IOException) {
+                    Log.e(TAG, ERROR_READ, it)
+                    emit(emptyPreferences())
+                } else {
+                    throw it
+                }
             }
-        }
-        .map { preferences ->
-            preferences[IS_REALTIME_MSG] ?: false
-        }
+            .map { preferences ->
+                preferences[key] ?: defaultValue
+            }
+    }
 
-    suspend fun saveIsRealtimeMsg(isRealtimeMsg: Boolean) {
+    private suspend fun saveBoolean(key: Preferences.Key<Boolean>, value: Boolean) {
         dataStore.edit { preferences ->
-            preferences[IS_REALTIME_MSG] = isRealtimeMsg
+            preferences[key] = value
         }
     }
 }
