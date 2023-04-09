@@ -94,23 +94,45 @@ fun MessageInputBox(
 
 @Composable
 fun Option(
-    chatboxViewModel: ChatboxViewModel,
-    uiState: ChatboxUiState,
-    modifier: Modifier = Modifier
+    description: String,
+    isChecked: Boolean,
+    onChange: (Boolean) -> Unit
 ) {
     Row(
         Modifier.padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
-            checked = uiState.isRealtimeMsg,
-            onCheckedChange = { isChecked ->
-                chatboxViewModel.onRealtimeMsgChanged(isChecked)
-            },
+            checked = isChecked,
+            onCheckedChange = onChange,
             modifier = Modifier.padding(end = 8.dp)
         )
+        Text(description)
+    }
+}
 
-        Text("Real-time Message")
+@Composable
+fun OptionList(
+    chatboxViewModel: ChatboxViewModel,
+    uiState: ChatboxUiState,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier) {
+        Option(
+            "Real-time Message",
+            uiState.isRealtimeMsg,
+            chatboxViewModel::onRealtimeMsgChanged
+        )
+        Option(
+            "Trigger Notification SFX",
+            uiState.isTriggerSFX,
+            chatboxViewModel::onTriggerSfxChanged
+        )
+        Option(
+            "Send Message Immediately",
+            uiState.isSendImmediately,
+            chatboxViewModel::onSendImmediatelyChanged
+        )
     }
 }
 
@@ -125,7 +147,7 @@ fun ChatScreen(
     Column() {
         IpInputBox(chatboxViewModel, uiState, modifier)
         MessageInputBox(chatboxViewModel, uiState, modifier)
-        Option(chatboxViewModel, uiState, modifier)
+        OptionList(chatboxViewModel, uiState, modifier)
     }
 }
 

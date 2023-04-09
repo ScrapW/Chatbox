@@ -32,11 +32,15 @@ class ChatboxViewModel(
 
     val uiState: StateFlow<ChatboxUiState> = combine(
         userPreferencesRepository.ipAddress,
-        userPreferencesRepository.isRealtimeMsg
-    ) { ipAddress, isRealtimeMsg ->
+        userPreferencesRepository.isRealtimeMsg,
+        userPreferencesRepository.isTriggerSfx,
+        userPreferencesRepository.isSendImmediately
+    ) { ipAddress, isRealtimeMsg, isTriggerSFX, isSendImmediately ->
         ChatboxUiState(
             ipAddress = ipAddress,
-            isRealtimeMsg = isRealtimeMsg
+            isRealtimeMsg = isRealtimeMsg,
+            isTriggerSFX = isTriggerSFX,
+            isSendImmediately = isSendImmediately
         )
     }.stateIn(
         scope = viewModelScope,
@@ -47,13 +51,21 @@ class ChatboxViewModel(
             },
             isRealtimeMsg = runBlocking {
                 userPreferencesRepository.isRealtimeMsg.first()
+            },
+            isTriggerSFX = runBlocking {
+                userPreferencesRepository.isTriggerSfx.first()
+            },
+            isSendImmediately = runBlocking {
+                userPreferencesRepository.isSendImmediately.first()
             }
         )
     )
 
     val chatbox = Chatbox(
         ipAddress = uiState.value.ipAddress,
-        realtimeMsg = uiState.value.isRealtimeMsg
+        realtimeMsg = uiState.value.isRealtimeMsg,
+        triggerSFX = uiState.value.isTriggerSFX,
+        sendImmediately = uiState.value.isSendImmediately
     )
 
     val ipAddressText = mutableStateOf(
@@ -91,9 +103,22 @@ class ChatboxViewModel(
 
     fun onRealtimeMsgChanged(isChecked: Boolean) {
         chatbox.realtimeMsg = isChecked
-//        isRealtimeMsgEnabled.value = isChecked
         viewModelScope.launch {
             userPreferencesRepository.saveIsRealtimeMsg(isChecked)
+        }
+    }
+
+    fun onTriggerSfxChanged(isChecked: Boolean) {
+        chatbox.triggerSFX = isChecked
+        viewModelScope.launch {
+            userPreferencesRepository.saveIsTriggerSFX(isChecked)
+        }
+    }
+
+    fun onSendImmediatelyChanged(isChecked: Boolean) {
+        chatbox.sendImmediately = isChecked
+        viewModelScope.launch {
+            userPreferencesRepository.saveIsSendImmediately(isChecked)
         }
     }
 
@@ -106,5 +131,7 @@ class ChatboxViewModel(
 
 data class ChatboxUiState(
     val ipAddress: String = "127.0.0.1",
-    val isRealtimeMsg: Boolean = false
+    val isRealtimeMsg: Boolean = false,
+    val isTriggerSFX: Boolean = true,
+    val isSendImmediately: Boolean = true
 )

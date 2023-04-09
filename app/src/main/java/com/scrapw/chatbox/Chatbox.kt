@@ -7,7 +7,12 @@ import kotlinx.coroutines.*
 import java.net.InetAddress
 import java.net.UnknownHostException
 
-class Chatbox(ipAddress: String, realtimeMsg: Boolean) {
+class Chatbox(
+    ipAddress: String,
+    var realtimeMsg: Boolean,
+    var triggerSFX: Boolean,
+    var sendImmediately: Boolean
+) {
     var ipAddress = ipAddress
         set(value) {
             field = value
@@ -23,7 +28,6 @@ class Chatbox(ipAddress: String, realtimeMsg: Boolean) {
         }
 
     var oscPort = 9000
-    var realtimeMsg = realtimeMsg
 
     init {
         this.ipAddress = ipAddress
@@ -49,7 +53,7 @@ class Chatbox(ipAddress: String, realtimeMsg: Boolean) {
     }
 
     fun sendMessage(text: String) {
-        sendOscMessage("/chatbox/input", listOf(text, true, true))
+        sendOscMessage("/chatbox/input", listOf(text, sendImmediately, triggerSFX))
         latestMsgTimestamp = System.currentTimeMillis()
     }
 

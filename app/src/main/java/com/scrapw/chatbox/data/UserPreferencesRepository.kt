@@ -14,7 +14,10 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
         const val ERROR_READ = "Error reading preferences."
 
         val IP_ADDRESS = stringPreferencesKey("ip_address")
+
         val IS_REALTIME_MSG = booleanPreferencesKey("is_realtime_msg")
+        val IS_TRIGGER_SFX = booleanPreferencesKey("is_trigger_sfx")
+        val IS_SEND_IMMEDIATELY = booleanPreferencesKey("is_send_immediately")
     }
 
     val ipAddress = getString(IP_ADDRESS, "127.0.0.1")
@@ -27,6 +30,18 @@ class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun saveIsRealtimeMsg(value: Boolean) {
         saveBoolean(IS_REALTIME_MSG, value)
+    }
+
+    val isTriggerSfx = getBoolean(IS_TRIGGER_SFX, true)
+
+    suspend fun saveIsTriggerSFX(value: Boolean) {
+        saveBoolean(IS_TRIGGER_SFX, value)
+    }
+
+    val isSendImmediately = getBoolean(IS_SEND_IMMEDIATELY, true)
+
+    suspend fun saveIsSendImmediately(value: Boolean) {
+        saveBoolean(IS_SEND_IMMEDIATELY, value)
     }
 
     private fun getString(key: Preferences.Key<String>, defaultValue: String): Flow<String> {
