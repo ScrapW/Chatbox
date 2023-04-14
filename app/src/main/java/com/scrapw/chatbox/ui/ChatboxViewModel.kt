@@ -1,8 +1,6 @@
 package com.scrapw.chatbox.ui
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,7 +10,11 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.scrapw.chatbox.Chatbox
 import com.scrapw.chatbox.ChatboxApplication
 import com.scrapw.chatbox.data.UserPreferencesRepository
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -68,27 +70,19 @@ class ChatboxViewModel(
         sendImmediately = uiState.value.isSendImmediately
     )
 
-    val ipAddressText = mutableStateOf(
-        TextFieldValue(
-            text = uiState.value.ipAddress,
-            selection = TextRange(uiState.value.ipAddress.length)
-        )
-    )
+    val ipAddressText = mutableStateOf(uiState.value.ipAddress)
     val messageText = mutableStateOf("")
 
 //    val isRealtimeMsgEnabled = mutableStateOf(chatbox.realtimeMsg)
 
     fun onIpAddressChange(ip: String) {
-        ipAddressText.value = TextFieldValue(
-            text = ip,
-            selection = TextRange(ip.length)
-        )
+        ipAddressText.value = ip
     }
 
     fun ipAddressApply() {
-        chatbox.ipAddress = ipAddressText.value.text
+        chatbox.ipAddress = ipAddressText.value
         viewModelScope.launch {
-            userPreferencesRepository.saveIpAddress(ipAddressText.value.text)
+            userPreferencesRepository.saveIpAddress(ipAddressText.value)
         }
     }
 
