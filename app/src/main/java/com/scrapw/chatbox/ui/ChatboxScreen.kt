@@ -22,7 +22,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.scrapw.chatbox.ui.theme.ChatboxTheme
 
 @Composable
 fun IpInputBox(
@@ -155,10 +154,10 @@ fun ChatScreen(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    ChatboxTheme {
-        ChatScreen()
-    }
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun DefaultPreview() {
+//    ChatboxTheme {
+//        ChatScreen()
+//    }
+//}
