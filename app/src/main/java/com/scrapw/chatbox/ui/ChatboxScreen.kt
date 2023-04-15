@@ -1,10 +1,14 @@
 package com.scrapw.chatbox.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +23,7 @@ import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -116,32 +121,51 @@ fun Option(
     isChecked: Boolean,
     onChange: (Boolean) -> Unit,
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 12.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .clickable { onChange(!isChecked) },
-
-//            .background(color = Color.LightGray, shape = RoundedCornerShape(8.dp)),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-//                tint = if (isChecked) MaterialTheme.colors.primary else Color.Gray,
-            modifier = Modifier
-                .size(52.dp)
-                .padding(vertical = 8.dp, horizontal = 12.dp)
-        )
-        Text(description)
-        Spacer(Modifier.weight(1f))
-        Switch(
-//            modifier = Modifier.wrapContentWidth(Alignment.End),
-            checked = isChecked,
-            onCheckedChange = onChange
-        )
+    val iconColor = if (isChecked) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        Color.Gray
     }
+    val backgroundColor = if (isChecked) {
+        MaterialTheme.colorScheme.secondaryContainer
+    } else {
+        MaterialTheme.colorScheme.background
+    }
+    Crossfade(
+        targetState = Pair(iconColor, backgroundColor),
+        animationSpec = tween(500)
+    ) { (crossfadeIconColor, crossfadeBackgroundColor) ->
+        Row(
+            Modifier
+                .height(64.dp)
+                .fillMaxWidth()
+                .padding(vertical = 4.dp, horizontal = 12.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { onChange(!isChecked) }
+                .background(
+                    color = crossfadeBackgroundColor,
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = crossfadeIconColor,
+                modifier = Modifier
+                    .size(52.dp)
+                    .padding(vertical = 8.dp, horizontal = 12.dp)
+            )
+            Text(description)
+            Spacer(Modifier.weight(1f))
+            Switch(
+                modifier = Modifier.padding(all = 5.dp),
+                checked = isChecked,
+                onCheckedChange = onChange
+            )
+        }
+    }
+
 }
 
 @Preview(showBackground = true)
