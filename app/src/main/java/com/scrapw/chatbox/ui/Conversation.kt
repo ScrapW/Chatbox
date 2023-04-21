@@ -1,4 +1,4 @@
-package com.scrapw.chatbox.conversation
+package com.scrapw.chatbox.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

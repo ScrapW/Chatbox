@@ -1,4 +1,4 @@
-package com.scrapw.chatbox.conversation
+package com.scrapw.chatbox.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.toMutableStateList
