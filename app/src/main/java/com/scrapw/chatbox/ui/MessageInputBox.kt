@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 fun MessageInputBox(
     chatboxViewModel: ChatboxViewModel,
     uiState: ChatboxUiState,
+    addMessage: (Message) -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Default.Add
 ) {
@@ -42,6 +43,7 @@ fun MessageInputBox(
             ),
             keyboardActions = KeyboardActions(
                 onSend = {
+                    addMessage(Message(chatboxViewModel.messageText.value))
                     chatboxViewModel.sendMessage()
                 }
             )
@@ -49,6 +51,7 @@ fun MessageInputBox(
 
         Button(
             onClick = {
+                addMessage(Message(chatboxViewModel.messageText.value))
                 chatboxViewModel.sendMessage()
             },
             modifier = Modifier.size(48.dp),

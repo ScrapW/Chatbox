@@ -25,8 +25,14 @@ import androidx.compose.ui.unit.dp
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
 
 @Composable
-fun ConversationList(uiState: ConversationUiState, onCopyPressed: (String) -> Unit) {
-    LazyColumn {
+fun ConversationList(
+    uiState: ConversationUiState,
+    onCopyPressed: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier
+    ) {
         items(uiState.messages) { message ->
             Card(
                 modifier = Modifier
@@ -78,7 +84,8 @@ fun ConversationListPreview() {
         ConversationList(
             ConversationUiState(
                 initialMessages = messageList
-            )
-        ) {}
+            ),
+            {}
+        )
     }
 }

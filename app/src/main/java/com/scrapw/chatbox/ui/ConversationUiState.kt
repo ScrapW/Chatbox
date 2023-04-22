@@ -10,7 +10,7 @@ class ConversationUiState(
     val messages: List<Message> = _messages
 
     fun addMessage(msg: Message) {
-        _messages.add(0, msg)
+        if (msg.content.isNotEmpty()) _messages.add(0, msg)
     }
 }
 

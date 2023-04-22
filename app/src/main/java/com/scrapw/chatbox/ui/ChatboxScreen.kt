@@ -6,6 +6,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+val conversationUiState = ConversationUiState()
+
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
@@ -16,7 +18,12 @@ fun ChatScreen(
     val uiState = chatboxViewModel.uiState.collectAsState().value
     Column() {
         IpInputBox(chatboxViewModel, uiState, modifier)
-        MessageInputBox(chatboxViewModel, uiState, modifier)
+        ConversationList(
+            uiState = conversationUiState,
+            onCopyPressed = chatboxViewModel::onMessageTextChange,
+            modifier = Modifier.weight(1f)
+        )
         OptionList(chatboxViewModel, uiState, modifier)
+        MessageInputBox(chatboxViewModel, uiState, conversationUiState::addMessage, modifier)
     }
 }
