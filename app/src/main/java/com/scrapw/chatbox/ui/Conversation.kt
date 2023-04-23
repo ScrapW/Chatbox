@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
@@ -30,18 +32,21 @@ fun ConversationList(
     onCopyPressed: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lazyListState = rememberLazyListState()
     LazyColumn(
-        modifier = modifier
+        modifier = modifier,
+        reverseLayout = true,
+        state = lazyListState
     ) {
         items(uiState.messages) { message ->
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 12.dp, horizontal = 16.dp)
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
                     .shadow(4.dp, RoundedCornerShape(8.dp))
             ) {
                 Column(
-                    Modifier.padding(16.dp)
+                    Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = message.content,
@@ -59,12 +64,19 @@ fun ConversationList(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.ContentCopy,
-                                contentDescription = "Copy message content"
+                                contentDescription = "Copy message content",
+                                modifier = Modifier.size(20.dp)
                             )
                         }
                     }
                 }
             }
+
+//            if (index == uiState.messages.size - 1) {
+//                LaunchedEffect(lazyListState) {
+//                    lazyListState.scrollToItem(index)
+//                }
+//            }
         }
     }
 }
@@ -83,7 +95,7 @@ fun ConversationListPreview() {
     ChatboxTheme {
         ConversationList(
             ConversationUiState(
-                initialMessages = messageList
+                initialMessages = messageList.reversed()
             ),
             {}
         )
