@@ -12,6 +12,8 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.scrapw.chatbox.Chatbox
 import com.scrapw.chatbox.ChatboxApplication
 import com.scrapw.chatbox.data.UserPreferencesRepository
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class ChatboxViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
@@ -82,12 +85,19 @@ class ChatboxViewModel(
     }
 
     fun ipAddressApply() {
-        chatbox.ipAddress = ipAddressText.value
+        CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.IO) {
+                chatbox.ipAddress = ipAddressText.value
+                isAddressResolvable.value = chatbox.addressResolvable
+            }
+        }
         viewModelScope.launch {
             userPreferencesRepository.saveIpAddress(ipAddressText.value)
         }
     }
 
+
+    val isAddressResolvable = mutableStateOf(true)
     fun onMessageTextChange(message: TextFieldValue) {
         messageText.value = message
         if (chatbox.realtimeMsg) {

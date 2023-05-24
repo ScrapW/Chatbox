@@ -3,7 +3,11 @@ package com.scrapw.chatbox
 import android.util.Log
 import com.illposed.osc.OSCMessage
 import com.illposed.osc.transport.udp.OSCPortOut
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -13,17 +17,18 @@ class Chatbox(
     var triggerSFX: Boolean,
     var sendImmediately: Boolean
 ) {
+
+    var addressResolvable = true
+
     var ipAddress = ipAddress
         set(value) {
             field = value
-            CoroutineScope(Dispatchers.IO).launch {
-                withContext(Dispatchers.IO) {
-                    try {
-                        inetAddress = InetAddress.getByName(value)
-                    } catch (e: UnknownHostException) {
-                        Log.d("IP", "Can't resolve $value")
-                    }
-                }
+            try {
+                inetAddress = InetAddress.getByName(value)
+                addressResolvable = true
+            } catch (e: UnknownHostException) {
+                Log.d("IP", "Can't resolve $value")
+                addressResolvable = false
             }
         }
 

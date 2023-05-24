@@ -35,6 +35,8 @@ fun IpInputBox(
                 .weight(1f)
                 .padding(all = 8.dp)
                 .clip(RoundedCornerShape(8.dp)),
+            isError = !chatboxViewModel.isAddressResolvable.value,
+            label = { Text("IP Address") },
             placeholder = { Text("Enter your ip here") },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
