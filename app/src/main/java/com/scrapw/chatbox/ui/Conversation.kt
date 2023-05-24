@@ -22,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
@@ -29,7 +31,7 @@ import com.scrapw.chatbox.ui.theme.ChatboxTheme
 @Composable
 fun ConversationList(
     uiState: ConversationUiState,
-    onCopyPressed: (String) -> Unit,
+    onCopyPressed: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -59,7 +61,12 @@ fun ConversationList(
                     ) {
                         IconButton(
                             onClick = {
-                                onCopyPressed(message.content)
+                                onCopyPressed(
+                                    TextFieldValue(
+                                        message.content,
+                                        TextRange(message.content.length)
+                                    )
+                                )
                             }
                         ) {
                             Icon(

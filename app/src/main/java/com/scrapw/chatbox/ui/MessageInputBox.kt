@@ -54,7 +54,7 @@ fun MessageInputBox(
             ),
             keyboardActions = KeyboardActions(
                 onSend = {
-                    addMessage(Message(chatboxViewModel.messageText.value))
+                    addMessage(Message(chatboxViewModel.messageText.value.text))
                     chatboxViewModel.sendMessage()
                 }
             )
@@ -65,7 +65,7 @@ fun MessageInputBox(
                 .fillMaxHeight()
                 .padding(vertical = 8.dp),
             onClick = {
-                addMessage(Message(chatboxViewModel.messageText.value))
+                addMessage(Message(chatboxViewModel.messageText.value.text))
                 chatboxViewModel.sendMessage()
             }
         ) {

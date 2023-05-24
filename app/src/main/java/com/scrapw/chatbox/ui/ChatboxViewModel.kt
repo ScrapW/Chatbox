@@ -1,6 +1,8 @@
 package com.scrapw.chatbox.ui
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -71,7 +73,7 @@ class ChatboxViewModel(
     )
 
     val ipAddressText = mutableStateOf(uiState.value.ipAddress)
-    val messageText = mutableStateOf("")
+    val messageText = mutableStateOf(TextFieldValue(""))
 
 //    val isRealtimeMsgEnabled = mutableStateOf(chatbox.realtimeMsg)
 
@@ -86,12 +88,12 @@ class ChatboxViewModel(
         }
     }
 
-    fun onMessageTextChange(text: String) {
-        messageText.value = text
+    fun onMessageTextChange(message: TextFieldValue) {
+        messageText.value = message
         if (chatbox.realtimeMsg) {
-            chatbox.sendRealtimeMessage(text)
+            chatbox.sendRealtimeMessage(message.text)
         } else {
-            chatbox.typing = text.isNotEmpty()
+            chatbox.typing = message.text.isNotEmpty()
         }
     }
 
@@ -117,9 +119,9 @@ class ChatboxViewModel(
     }
 
     fun sendMessage() {
-        chatbox.sendMessage(messageText.value)
+        chatbox.sendMessage(messageText.value.text)
         chatbox.typing = false
-        messageText.value = ""
+        messageText.value = TextFieldValue("", TextRange.Zero)
     }
 }
 
