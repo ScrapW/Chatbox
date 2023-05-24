@@ -2,6 +2,7 @@ package com.scrapw.chatbox.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.toMutableStateList
+import java.time.Instant
 
 class ConversationUiState(
     initialMessages: List<Message> = listOf<Message>()
@@ -10,11 +11,13 @@ class ConversationUiState(
     val messages: List<Message> = _messages
 
     fun addMessage(msg: Message) {
-        if (msg.content.isNotEmpty()) _messages.add(0, msg)
+        if (msg.content.isEmpty()) return
+        _messages.add(0, msg)
     }
 }
 
 @Immutable
 data class Message(
-    val content: String
+    val content: String,
+    val timestamp: Instant? = null
 )

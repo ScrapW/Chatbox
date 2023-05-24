@@ -23,6 +23,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import java.time.Instant
+
+fun sendMessage(
+    chatboxViewModel: ChatboxViewModel,
+    addMessage: (Message) -> Unit
+) {
+    addMessage(
+        Message(chatboxViewModel.messageText.value.text, Instant.now())
+
+    )
+    chatboxViewModel.sendMessage()
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,8 +66,7 @@ fun MessageInputBox(
             ),
             keyboardActions = KeyboardActions(
                 onSend = {
-                    addMessage(Message(chatboxViewModel.messageText.value.text))
-                    chatboxViewModel.sendMessage()
+                    sendMessage(chatboxViewModel, addMessage)
                 }
             )
         )
@@ -65,8 +76,7 @@ fun MessageInputBox(
                 .fillMaxHeight()
                 .padding(vertical = 8.dp),
             onClick = {
-                addMessage(Message(chatboxViewModel.messageText.value.text))
-                chatboxViewModel.sendMessage()
+                sendMessage(chatboxViewModel, addMessage)
             }
         ) {
             Icon(
