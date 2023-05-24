@@ -1,5 +1,6 @@
 package com.scrapw.chatbox.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -9,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import java.time.Instant
@@ -42,12 +41,14 @@ fun MessageInputBox(
     chatboxViewModel: ChatboxViewModel,
     uiState: ChatboxUiState,
     addMessage: (Message) -> Unit,
-    modifier: Modifier = Modifier,
-    icon: ImageVector = Icons.Default.Add
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier.height(72.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier
+            .height(72.dp)
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         TextField(
             value = chatboxViewModel.messageText.value,
@@ -57,7 +58,6 @@ fun MessageInputBox(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .padding(all = 8.dp)
                 .clip(RoundedCornerShape(8.dp)),
 
             placeholder = { Text("Enter your message here") },
@@ -72,9 +72,7 @@ fun MessageInputBox(
         )
 
         Button(
-            modifier = Modifier
-                .fillMaxHeight()
-                .padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxHeight(),
             onClick = {
                 sendMessage(chatboxViewModel, addMessage)
             }
