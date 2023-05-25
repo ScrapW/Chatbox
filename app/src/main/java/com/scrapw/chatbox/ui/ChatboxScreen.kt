@@ -1,5 +1,7 @@
 package com.scrapw.chatbox.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,14 +47,19 @@ fun ChatScreen(
                     RoundedCornerShape(8.dp)
                 )
         ) {
-            if (conversationUiState.messages.isEmpty()) {
-                EmptyConversationList(Modifier.fillMaxSize())
-            } else {
-                ConversationList(
-                    uiState = conversationUiState,
-                    onCopyPressed = chatboxViewModel::onMessageTextChange,
-                    modifier = Modifier.fillMaxSize()
-                )
+            Crossfade(
+                targetState = conversationUiState.messages.isEmpty(),
+                animationSpec = tween(500), label = "MainScreenConversationCrossfade"
+            ) { conversationEmpty ->
+                if (conversationEmpty) {
+                    EmptyConversationList(Modifier.fillMaxSize())
+                } else {
+                    ConversationList(
+                        uiState = conversationUiState,
+                        onCopyPressed = chatboxViewModel::onMessageTextChange,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
             }
         }
         OptionList(chatboxViewModel, uiState, modifier)
