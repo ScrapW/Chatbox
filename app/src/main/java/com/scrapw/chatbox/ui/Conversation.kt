@@ -1,8 +1,10 @@
 package com.scrapw.chatbox.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +15,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,6 +115,30 @@ fun ConversationList(
         items(uiState.messages) { message ->
             MessageCard(message, onCopyPressed)
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun EmptyConversationList(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.History,
+            contentDescription = "Copy message content",
+            modifier = Modifier.size(140.dp),
+            tint = MaterialTheme.colorScheme.primaryContainer
+        )
+        Text(
+            text = "(Empty)",
+            style = MaterialTheme.typography.titleLarge,
+            fontStyle = FontStyle.Italic,
+            color = MaterialTheme.colorScheme.primaryContainer
+        )
     }
 }
 
