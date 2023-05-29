@@ -20,9 +20,11 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Send
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,6 +46,7 @@ private data class Option(
     val onChange: (Boolean) -> Unit = {}
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChipOption(
     description: String,
@@ -54,43 +57,26 @@ fun ChipOption(
     val iconColor =
         if (isChecked) MaterialTheme.colorScheme.primary
         else Color.Gray
-
-    val backgroundColor =
-        if (isChecked) MaterialTheme.colorScheme.secondaryContainer
-        else MaterialTheme.colorScheme.background
-
-
+    
     Crossfade(
-        targetState = Pair(iconColor, backgroundColor),
+        targetState = Pair(isChecked, iconColor),
         animationSpec = tween(500)
-    ) { (crossfadeIconColor, crossfadeBackgroundColor) ->
-
-        Surface(
-            modifier = Modifier
-                .clip(MaterialTheme.shapes.medium)
-                .clickable { onChange(!isChecked) },
-
-            shadowElevation = 8.dp,
-            shape = MaterialTheme.shapes.medium,
-            color = crossfadeBackgroundColor
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(vertical = 4.dp, horizontal = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+    ) { (isChecked, iconColor) ->
+        FilterChip(
+            selected = isChecked,
+            onClick = { onChange(!isChecked) },
+            label = { Text(description) },
+            leadingIcon = {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
-                    tint = crossfadeIconColor,
-                    modifier = Modifier.size(26.dp)
+                    tint = iconColor,
+                    modifier = Modifier.size(FilterChipDefaults.IconSize)
                 )
-                Text(description)
-            }
-        }
+            },
+            modifier = Modifier.height(36.dp)
+        )
     }
-
 }
 
 @Composable
