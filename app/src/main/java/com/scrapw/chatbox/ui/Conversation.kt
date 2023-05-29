@@ -1,7 +1,10 @@
 package com.scrapw.chatbox.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
@@ -148,6 +152,36 @@ fun EmptyConversationList(modifier: Modifier = Modifier) {
             fontStyle = FontStyle.Italic,
             color = MaterialTheme.colorScheme.primaryContainer
         )
+    }
+}
+
+@Composable
+fun Conversation(
+    uiState: ConversationUiState,
+    onCopyPressed: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier
+            .padding(12.dp)
+            .clip(
+                RoundedCornerShape(8.dp)
+            )
+    ) {
+        Crossfade(
+            targetState = uiState.messages.isEmpty(),
+            animationSpec = tween(500), label = "MainScreenConversationCrossfade"
+        ) { conversationEmpty ->
+            if (conversationEmpty) {
+                EmptyConversationList(Modifier.fillMaxSize())
+            } else {
+                ConversationList(
+                    uiState = uiState,
+                    onCopyPressed = onCopyPressed,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
     }
 }
 
