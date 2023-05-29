@@ -29,7 +29,7 @@ fun ChatScreen(
             onCopyPressed = chatboxViewModel::onMessageTextChange,
             modifier = Modifier.weight(1f)
         )
-        OptionList(chatboxViewModel, uiState, modifier)
+        OptionList(chatboxViewModel, uiState, true, modifier)
         MessageInputBox(chatboxViewModel, uiState, conversationUiState::addMessage, modifier)
     }
 }

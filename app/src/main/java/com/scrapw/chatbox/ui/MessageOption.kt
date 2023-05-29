@@ -4,6 +4,8 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
@@ -19,6 +22,7 @@ import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,32 +36,86 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
+private data class Option(
+    val description: String,
+    val shortDescription: String,
+    val icon: ImageVector,
+    val isChecked: Boolean,
+    val onChange: (Boolean) -> Unit = {}
+)
+
 @Composable
-fun Option(
+fun ChipOption(
     description: String,
     icon: ImageVector,
     isChecked: Boolean,
     onChange: (Boolean) -> Unit,
 ) {
-    val iconColor = if (isChecked) {
-        MaterialTheme.colorScheme.primary
-    } else {
-        Color.Gray
+    val iconColor =
+        if (isChecked) MaterialTheme.colorScheme.primary
+        else Color.Gray
+
+    val backgroundColor =
+        if (isChecked) MaterialTheme.colorScheme.secondaryContainer
+        else MaterialTheme.colorScheme.background
+
+
+    Crossfade(
+        targetState = Pair(iconColor, backgroundColor),
+        animationSpec = tween(500)
+    ) { (crossfadeIconColor, crossfadeBackgroundColor) ->
+
+        Surface(
+            modifier = Modifier
+                .clip(MaterialTheme.shapes.medium)
+                .clickable { onChange(!isChecked) },
+
+            shadowElevation = 8.dp,
+            shape = MaterialTheme.shapes.medium,
+            color = crossfadeBackgroundColor
+        ) {
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 4.dp, horizontal = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = crossfadeIconColor,
+                    modifier = Modifier.size(26.dp)
+                )
+                Text(description)
+            }
+        }
     }
-    val backgroundColor = if (isChecked) {
-        MaterialTheme.colorScheme.secondaryContainer
-    } else {
-        MaterialTheme.colorScheme.background
-    }
+
+}
+
+@Composable
+fun BarOption(
+    description: String,
+    icon: ImageVector,
+    isChecked: Boolean,
+    onChange: (Boolean) -> Unit,
+) {
+    val iconColor =
+        if (isChecked) MaterialTheme.colorScheme.primary
+        else Color.Gray
+
+    val backgroundColor =
+        if (isChecked) MaterialTheme.colorScheme.secondaryContainer
+        else MaterialTheme.colorScheme.background
+
     Crossfade(
         targetState = Pair(iconColor, backgroundColor),
         animationSpec = tween(500)
     ) { (crossfadeIconColor, crossfadeBackgroundColor) ->
         Row(
             Modifier
-                .height(64.dp)
+                .height(56.dp)
                 .fillMaxWidth()
-                .padding(vertical = 4.dp, horizontal = 12.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .clickable { onChange(!isChecked) }
                 .background(
@@ -86,43 +144,95 @@ fun Option(
 
 }
 
+@Composable
+fun OptionList(
+    chatboxViewModel: ChatboxViewModel?,
+    uiState: ChatboxUiState?,
+    useChipsOptions: Boolean,
+    modifier: Modifier = Modifier
+) {
+
+    val optionIcons = Icons.Rounded
+
+    val options: List<Option> = listOf(
+        Option(
+            "Real-time Message",
+            "RT",
+            optionIcons.FastForward,
+            uiState?.isRealtimeMsg ?: true,
+            chatboxViewModel?.let { it::onRealtimeMsgChanged } ?: { }
+        ),
+        Option(
+            "Trigger Notification SFX",
+            "Sound",
+            optionIcons.NotificationsActive,
+            uiState?.isTriggerSFX ?: true,
+            chatboxViewModel?.let { it::onTriggerSfxChanged } ?: { }
+        ),
+        Option(
+            "Send Message Immediately",
+            "Direct",
+            optionIcons.Send,
+            uiState?.isSendImmediately ?: true,
+            chatboxViewModel?.let { it::onSendImmediatelyChanged } ?: { }
+        )
+    )
+
+    val optionModifier = modifier.padding(vertical = 4.dp, horizontal = 12.dp)
+
+    if (useChipsOptions) {
+        val horizontalScrollState = rememberScrollState()
+
+        Row(
+            optionModifier.horizontalScroll(horizontalScrollState),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEach { option ->
+                ChipOption(option.shortDescription, option.icon, option.isChecked, option.onChange)
+            }
+        }
+    } else {
+        Column(
+            optionModifier,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            options.forEach { option ->
+                BarOption(option.description, option.icon, option.isChecked, option.onChange)
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
-fun OptionPreview() {
+fun ChipOptionPreview() {
     val isChecked = remember { mutableStateOf(true) }
-    Option(
+    ChipOption(
         "Description",
         Icons.Rounded.Check,
         isChecked.value
     ) { isChecked.value = !isChecked.value }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun OptionList(
-    chatboxViewModel: ChatboxViewModel,
-    uiState: ChatboxUiState,
-    modifier: Modifier = Modifier
-) {
-    val optionIcons = Icons.Rounded
+fun ChipsOptionListPreview() {
+    OptionList(null, null, true, Modifier)
+}
 
-    Column(modifier) {
-        Option(
-            "Real-time Message",
-            optionIcons.FastForward,
-            uiState.isRealtimeMsg,
-            chatboxViewModel::onRealtimeMsgChanged
-        )
-        Option(
-            "Trigger Notification SFX",
-            optionIcons.NotificationsActive,
-            uiState.isTriggerSFX,
-            chatboxViewModel::onTriggerSfxChanged
-        )
-        Option(
-            "Send Message Immediately",
-            optionIcons.Send,
-            uiState.isSendImmediately,
-            chatboxViewModel::onSendImmediatelyChanged
-        )
-    }
+@Preview(showBackground = true)
+@Composable
+fun BarOptionPreview() {
+    val isChecked = remember { mutableStateOf(true) }
+    BarOption(
+        "Description",
+        Icons.Rounded.Check,
+        isChecked.value
+    ) { isChecked.value = !isChecked.value }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BarOptionListPreview() {
+    OptionList(null, null, false, Modifier)
 }
