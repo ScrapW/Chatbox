@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.rounded.History
@@ -28,8 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -82,7 +79,6 @@ fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp)
-            .shadow(4.dp, RoundedCornerShape(8.dp))
             .clickable {
                 onCopyPressed(
                     TextFieldValue(
@@ -161,13 +157,7 @@ fun Conversation(
     onCopyPressed: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier
-            .padding(12.dp)
-            .clip(
-                RoundedCornerShape(8.dp)
-            )
-    ) {
+    Box(modifier) {
         Crossfade(
             targetState = uiState.messages.isEmpty(),
             animationSpec = tween(500), label = "MainScreenConversationCrossfade"

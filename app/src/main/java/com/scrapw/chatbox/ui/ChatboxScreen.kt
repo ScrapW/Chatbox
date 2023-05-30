@@ -1,16 +1,18 @@
 package com.scrapw.chatbox.ui
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+val conversationUiState = ConversationUiState()
+
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
@@ -19,17 +21,32 @@ fun ChatScreen(
     )
 ) {
     val uiState = chatboxViewModel.uiState.collectAsState().value
-    val conversationUiState by remember { mutableStateOf(ConversationUiState()) }
 
-    Column() {
+    Column(modifier) {
         Title()
-        IpInputBox(chatboxViewModel, uiState, modifier)
+        Surface(tonalElevation = 2.dp) {
+            IpInputBox(chatboxViewModel, uiState)
+        }
         Conversation(
             uiState = conversationUiState,
             onCopyPressed = chatboxViewModel::onMessageTextChange,
             modifier = Modifier.weight(1f)
         )
-        OptionList(chatboxViewModel, uiState, true, modifier)
-        MessageInputBox(chatboxViewModel, uiState, conversationUiState::addMessage, modifier)
+        Surface(
+            tonalElevation = 2.dp,
+            shape = MaterialTheme.shapes.large.copy(
+                bottomEnd = CornerSize(0.dp),
+                bottomStart = CornerSize(0.dp)
+            )
+        ) {
+            Column(Modifier.padding(top = 10.dp)) {
+                OptionList(chatboxViewModel, uiState, true)
+                MessageInputBox(
+                    chatboxViewModel,
+                    uiState,
+                    conversationUiState::addMessage
+                )
+            }
+        }
     }
 }
