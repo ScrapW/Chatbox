@@ -57,7 +57,7 @@ fun ChipOption(
     val iconColor =
         if (isChecked) MaterialTheme.colorScheme.primary
         else Color.Gray
-    
+
     Crossfade(
         targetState = Pair(isChecked, iconColor),
         animationSpec = tween(500)
@@ -143,7 +143,7 @@ fun OptionList(
     val options: List<Option> = listOf(
         Option(
             "Real-time Message",
-            "RT",
+            "Real-time",
             optionIcons.FastForward,
             uiState?.isRealtimeMsg ?: true,
             chatboxViewModel?.let { it::onRealtimeMsgChanged } ?: { }
