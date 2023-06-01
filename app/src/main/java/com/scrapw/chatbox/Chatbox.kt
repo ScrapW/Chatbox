@@ -35,7 +35,9 @@ class Chatbox(
     var oscPort = 9000
 
     init {
-        this.ipAddress = ipAddress
+        CoroutineScope(Dispatchers.IO).launch {
+            this@Chatbox.ipAddress = ipAddress
+        }
     }
 
     private lateinit var inetAddress: InetAddress
