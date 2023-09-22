@@ -54,7 +54,11 @@ class Chatbox(
             val message = OSCMessage(address, arguments)
             val sender = OSCPortOut(inetAddress, oscPort)
             delay(delay)
-            sender.send(message)
+            try {
+                sender.send(message)
+            } catch (e: Exception) {
+                Log.d("OSC_Send", "Can't send OSC Message")
+            }
             sender.close()
         }
     }
