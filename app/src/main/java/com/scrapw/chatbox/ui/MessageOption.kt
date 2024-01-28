@@ -60,7 +60,7 @@ fun ChipOption(
 
     Crossfade(
         targetState = Pair(isChecked, iconColor),
-        animationSpec = tween(500)
+        animationSpec = tween(500), label = ""
     ) { (isChecked, iconColor) ->
         FilterChip(
             selected = isChecked,
@@ -96,7 +96,7 @@ fun BarOption(
 
     Crossfade(
         targetState = Pair(iconColor, backgroundColor),
-        animationSpec = tween(500)
+        animationSpec = tween(500), label = ""
     ) { (crossfadeIconColor, crossfadeBackgroundColor) ->
         Row(
             Modifier

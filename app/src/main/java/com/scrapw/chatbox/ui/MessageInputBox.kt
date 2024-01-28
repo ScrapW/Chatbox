@@ -60,7 +60,7 @@ fun MessageInputBox(
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(8.dp)),
             singleLine = true,
-            placeholder = { Text("Enter your message here") },
+            placeholder = { Text("Write a message...") },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Send
             ),
