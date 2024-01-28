@@ -12,7 +12,8 @@ import java.net.InetAddress
 import java.net.UnknownHostException
 
 class ChatboxOSC(
-    ipAddress: String
+    ipAddress: String,
+    val port: Int
 ) {
 
     var addressResolvable = true
@@ -29,8 +30,6 @@ class ChatboxOSC(
                 addressResolvable = false
             }
         }
-
-    var oscPort = 9000
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -50,7 +49,7 @@ class ChatboxOSC(
         CoroutineScope(Dispatchers.IO).launch {
 
             val message = OSCMessage(address, arguments)
-            val sender = OSCPortOut(inetAddress, oscPort)
+            val sender = OSCPortOut(inetAddress, port)
             delay(delay)
             try {
                 sender.send(message)

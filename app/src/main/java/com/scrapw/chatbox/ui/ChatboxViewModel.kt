@@ -17,10 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.Instant
 
@@ -54,24 +52,13 @@ class ChatboxViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = MessengerUiState(
-            ipAddress = runBlocking {
-                userPreferencesRepository.ipAddress.first()
-            },
-            isRealtimeMsg = runBlocking {
-                userPreferencesRepository.isRealtimeMsg.first()
-            },
-            isTriggerSFX = runBlocking {
-                userPreferencesRepository.isTriggerSfx.first()
-            },
-            isSendImmediately = runBlocking {
-                userPreferencesRepository.isSendImmediately.first()
-            }
-        )
+        initialValue = MessengerUiState()
     )
 
+
     private val chatboxOSC = ChatboxOSC(
-        ipAddress = messengerUiState.value.ipAddress
+        ipAddress = messengerUiState.value.ipAddress,
+        port = 9000
     )
 
     val ipAddressText = mutableStateOf(messengerUiState.value.ipAddress)
@@ -86,7 +73,6 @@ class ChatboxViewModel(
             withContext(Dispatchers.IO) {
                 chatboxOSC.ipAddress = ipAddressText.value
                 isAddressResolvable.value = chatboxOSC.addressResolvable
-
             }
         }
         viewModelScope.launch {
@@ -109,7 +95,6 @@ class ChatboxViewModel(
         viewModelScope.launch {
             userPreferencesRepository.saveIsRealtimeMsg(isChecked)
         }
-
     }
 
     fun onTriggerSfxChanged(isChecked: Boolean) {
