@@ -1,4 +1,4 @@
-package com.scrapw.chatbox
+package com.scrapw.chatbox.osc
 
 import android.util.Log
 import com.illposed.osc.OSCMessage
@@ -11,14 +11,12 @@ import kotlinx.coroutines.launch
 import java.net.InetAddress
 import java.net.UnknownHostException
 
-class Chatbox(
-    ipAddress: String,
-    var realtimeMsg: Boolean,
-    var triggerSFX: Boolean,
-    var sendImmediately: Boolean
+class ChatboxOSC(
+    ipAddress: String
 ) {
 
     var addressResolvable = true
+        private set
 
     var ipAddress = ipAddress
         set(value) {
@@ -36,7 +34,7 @@ class Chatbox(
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
-            this@Chatbox.ipAddress = ipAddress
+            this@ChatboxOSC.ipAddress = ipAddress
         }
     }
 
@@ -63,7 +61,7 @@ class Chatbox(
         }
     }
 
-    fun sendMessage(text: String) {
+    fun sendMessage(text: String, sendImmediately: Boolean, triggerSFX: Boolean) {
         sendOscMessage("/chatbox/input", listOf(text, sendImmediately, triggerSFX))
         latestMsgTimestamp = System.currentTimeMillis()
     }

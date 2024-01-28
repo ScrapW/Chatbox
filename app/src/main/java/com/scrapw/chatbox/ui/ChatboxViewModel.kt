@@ -9,9 +9,9 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.scrapw.chatbox.Chatbox
 import com.scrapw.chatbox.ChatboxApplication
 import com.scrapw.chatbox.data.UserPreferencesRepository
+import com.scrapw.chatbox.osc.ChatboxOSC
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.time.Instant
 
 class ChatboxViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
@@ -36,14 +37,15 @@ class ChatboxViewModel(
         }
     }
 
+    val conversationUiState = ConversationUiState()
 
-    val uiState: StateFlow<ChatboxUiState> = combine(
+    val messengerUiState: StateFlow<MessengerUiState> = combine(
         userPreferencesRepository.ipAddress,
         userPreferencesRepository.isRealtimeMsg,
         userPreferencesRepository.isTriggerSfx,
         userPreferencesRepository.isSendImmediately
     ) { ipAddress, isRealtimeMsg, isTriggerSFX, isSendImmediately ->
-        ChatboxUiState(
+        MessengerUiState(
             ipAddress = ipAddress,
             isRealtimeMsg = isRealtimeMsg,
             isTriggerSFX = isTriggerSFX,
@@ -52,7 +54,7 @@ class ChatboxViewModel(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = ChatboxUiState(
+        initialValue = MessengerUiState(
             ipAddress = runBlocking {
                 userPreferencesRepository.ipAddress.first()
             },
@@ -68,17 +70,12 @@ class ChatboxViewModel(
         )
     )
 
-    val chatbox = Chatbox(
-        ipAddress = uiState.value.ipAddress,
-        realtimeMsg = uiState.value.isRealtimeMsg,
-        triggerSFX = uiState.value.isTriggerSFX,
-        sendImmediately = uiState.value.isSendImmediately
+    private val chatboxOSC = ChatboxOSC(
+        ipAddress = messengerUiState.value.ipAddress
     )
 
-    val ipAddressText = mutableStateOf(uiState.value.ipAddress)
+    val ipAddressText = mutableStateOf(messengerUiState.value.ipAddress)
     val messageText = mutableStateOf(TextFieldValue(""))
-
-//    val isRealtimeMsgEnabled = mutableStateOf(chatbox.realtimeMsg)
 
     fun onIpAddressChange(ip: String) {
         ipAddressText.value = ip
@@ -87,8 +84,9 @@ class ChatboxViewModel(
     fun ipAddressApply() {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO) {
-                chatbox.ipAddress = ipAddressText.value
-                isAddressResolvable.value = chatbox.addressResolvable
+                chatboxOSC.ipAddress = ipAddressText.value
+                isAddressResolvable.value = chatboxOSC.addressResolvable
+
             }
         }
         viewModelScope.launch {
@@ -100,42 +98,52 @@ class ChatboxViewModel(
     val isAddressResolvable = mutableStateOf(true)
     fun onMessageTextChange(message: TextFieldValue) {
         messageText.value = message
-        if (chatbox.realtimeMsg) {
-            chatbox.sendRealtimeMessage(message.text)
+        if (messengerUiState.value.isRealtimeMsg) {
+            chatboxOSC.sendRealtimeMessage(message.text)
         } else {
-            chatbox.typing = message.text.isNotEmpty()
+            chatboxOSC.typing = message.text.isNotEmpty()
         }
     }
 
     fun onRealtimeMsgChanged(isChecked: Boolean) {
-        chatbox.realtimeMsg = isChecked
         viewModelScope.launch {
             userPreferencesRepository.saveIsRealtimeMsg(isChecked)
         }
+
     }
 
     fun onTriggerSfxChanged(isChecked: Boolean) {
-        chatbox.triggerSFX = isChecked
         viewModelScope.launch {
             userPreferencesRepository.saveIsTriggerSFX(isChecked)
         }
     }
 
     fun onSendImmediatelyChanged(isChecked: Boolean) {
-        chatbox.sendImmediately = isChecked
         viewModelScope.launch {
             userPreferencesRepository.saveIsSendImmediately(isChecked)
         }
     }
 
     fun sendMessage() {
-        chatbox.sendMessage(messageText.value.text)
-        chatbox.typing = false
+        chatboxOSC.sendMessage(
+            messageText.value.text,
+            messengerUiState.value.isSendImmediately,
+            messengerUiState.value.isTriggerSFX
+        )
+        chatboxOSC.typing = false
+
+        conversationUiState.addMessage(
+            Message(
+                messageText.value.text,
+                Instant.now()
+            )
+        )
+
         messageText.value = TextFieldValue("", TextRange.Zero)
     }
 }
 
-data class ChatboxUiState(
+data class MessengerUiState(
     val ipAddress: String = "127.0.0.1",
     val isRealtimeMsg: Boolean = false,
     val isTriggerSFX: Boolean = true,

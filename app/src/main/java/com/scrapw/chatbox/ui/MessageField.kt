@@ -22,25 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import java.time.Instant
 
-fun sendMessage(
-    chatboxViewModel: ChatboxViewModel,
-    addMessage: (Message) -> Unit
-) {
-    addMessage(
-        Message(chatboxViewModel.messageText.value.text, Instant.now())
-
-    )
-    chatboxViewModel.sendMessage()
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MessageInputBox(
+fun MessageField(
     chatboxViewModel: ChatboxViewModel,
-    uiState: ChatboxUiState,
-    addMessage: (Message) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -66,7 +53,7 @@ fun MessageInputBox(
             ),
             keyboardActions = KeyboardActions(
                 onSend = {
-                    sendMessage(chatboxViewModel, addMessage)
+                    chatboxViewModel.sendMessage()
                 }
             )
         )
@@ -74,7 +61,7 @@ fun MessageInputBox(
         Button(
             modifier = Modifier.fillMaxHeight(),
             onClick = {
-                sendMessage(chatboxViewModel, addMessage)
+                chatboxViewModel.sendMessage()
             }
         ) {
             Icon(

@@ -17,9 +17,9 @@ import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun IpInputBox(
+fun IpField(
     chatboxViewModel: ChatboxViewModel,
-    uiState: ChatboxUiState,
+    uiState: MessengerUiState,
     modifier: Modifier = Modifier
 ) {
     Row(

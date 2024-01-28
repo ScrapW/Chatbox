@@ -133,7 +133,7 @@ fun BarOption(
 @Composable
 fun OptionList(
     chatboxViewModel: ChatboxViewModel?,
-    uiState: ChatboxUiState?,
+    uiState: MessengerUiState?,
     useChipsOptions: Boolean,
     modifier: Modifier = Modifier
 ) {
