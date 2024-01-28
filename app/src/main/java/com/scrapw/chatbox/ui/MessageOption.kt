@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 private data class Option(
     val description: String,
@@ -132,9 +133,9 @@ fun BarOption(
 
 @Composable
 fun OptionList(
-    chatboxViewModel: ChatboxViewModel?,
-    uiState: MessengerUiState?,
-    useChipsOptions: Boolean,
+    chatboxViewModel: ChatboxViewModel = viewModel(factory = ChatboxViewModel.Factory),
+    uiState: MessengerUiState = MessengerUiState(),
+    useChipsOptions: Boolean = true,
     modifier: Modifier = Modifier
 ) {
 
@@ -145,22 +146,22 @@ fun OptionList(
             "Real-time Message",
             "Real-time",
             optionIcons.FastForward,
-            uiState?.isRealtimeMsg ?: true,
-            chatboxViewModel?.let { it::onRealtimeMsgChanged } ?: { }
+            uiState.isRealtimeMsg,
+            chatboxViewModel::onRealtimeMsgChanged
         ),
         Option(
             "Trigger Notification SFX",
             "Sound",
             optionIcons.NotificationsActive,
-            uiState?.isTriggerSFX ?: true,
-            chatboxViewModel?.let { it::onTriggerSfxChanged } ?: { }
+            uiState.isTriggerSFX,
+            chatboxViewModel::onTriggerSfxChanged
         ),
         Option(
             "Send Message Immediately",
             "Direct",
             optionIcons.Send,
-            uiState?.isSendImmediately ?: true,
-            chatboxViewModel?.let { it::onSendImmediatelyChanged } ?: { }
+            uiState.isSendImmediately,
+            chatboxViewModel::onSendImmediatelyChanged
         )
     )
 
@@ -203,7 +204,7 @@ fun ChipOptionPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ChipsOptionListPreview() {
-    OptionList(null, null, true, Modifier)
+    OptionList(useChipsOptions = true)
 }
 
 @Preview(showBackground = true)
@@ -220,5 +221,5 @@ fun BarOptionPreview() {
 @Preview(showBackground = true)
 @Composable
 fun BarOptionListPreview() {
-    OptionList(null, null, false, Modifier)
+    OptionList(useChipsOptions = false)
 }
