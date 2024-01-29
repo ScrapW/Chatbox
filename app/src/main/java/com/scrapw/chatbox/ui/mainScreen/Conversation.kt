@@ -1,4 +1,4 @@
-package com.scrapw.chatbox.ui
+package com.scrapw.chatbox.ui.mainScreen
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween

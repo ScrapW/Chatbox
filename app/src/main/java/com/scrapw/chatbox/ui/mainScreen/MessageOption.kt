@@ -1,4 +1,4 @@
-package com.scrapw.chatbox.ui
+package com.scrapw.chatbox.ui.mainScreen
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -20,7 +20,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Send
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -38,6 +37,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.scrapw.chatbox.ui.ChatboxViewModel
+import com.scrapw.chatbox.ui.MessengerUiState
 
 private data class Option(
     val description: String,
@@ -47,7 +48,6 @@ private data class Option(
     val onChange: (Boolean) -> Unit = {}
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChipOption(
     description: String,
