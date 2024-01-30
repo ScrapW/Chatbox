@@ -21,6 +21,8 @@ class ChatboxOSC(
 
     var ipAddress = ipAddress
         set(value) {
+            Log.d("IP", "IP Address $field -> $value")
+            
             field = value
             try {
                 inetAddress = InetAddress.getByName(value)

@@ -16,11 +16,17 @@ import com.scrapw.chatbox.ui.mainScreen.ConversationUiState
 import com.scrapw.chatbox.ui.mainScreen.Message
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flattenMerge
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.time.Instant
 
@@ -39,8 +45,26 @@ class ChatboxViewModel(
 
     val conversationUiState = ConversationUiState()
 
+    //TODO: Is this correct?
+    private val storedIpState: StateFlow<String> =
+        userPreferencesRepository.ipAddress.map {
+            it
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ""
+        )
+
+    private val userInputIpState = MutableStateFlow<String>("")
+
+
+    private val ipFlow = listOf(
+        storedIpState,
+        userInputIpState
+    ).asFlow().flattenMerge()
+
     val messengerUiState: StateFlow<MessengerUiState> = combine(
-        userPreferencesRepository.ipAddress,
+        ipFlow,
         userPreferencesRepository.isRealtimeMsg,
         userPreferencesRepository.isTriggerSfx,
         userPreferencesRepository.isSendImmediately
@@ -59,26 +83,29 @@ class ChatboxViewModel(
 
 
     private val chatboxOSC = ChatboxOSC(
-        ipAddress = messengerUiState.value.ipAddress,
+//        ipAddress = messengerUiState.value.ipAddress,
+        ipAddress = runBlocking {
+            userPreferencesRepository.ipAddress.first()
+        },
         port = 9000
     )
 
-    val ipAddressText = mutableStateOf(messengerUiState.value.ipAddress)
+    //    var ipAddressText = messengerUiState.value.ipAddress
     val messageText = mutableStateOf(TextFieldValue(""))
 
     fun onIpAddressChange(ip: String) {
-        ipAddressText.value = ip
+        userInputIpState.value = ip
     }
 
     fun ipAddressApply() {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO) {
-                chatboxOSC.ipAddress = ipAddressText.value
+                chatboxOSC.ipAddress = messengerUiState.value.ipAddress
                 isAddressResolvable.value = chatboxOSC.addressResolvable
             }
         }
         viewModelScope.launch {
-            userPreferencesRepository.saveIpAddress(ipAddressText.value)
+            userPreferencesRepository.saveIpAddress(messengerUiState.value.ipAddress)
         }
     }
 

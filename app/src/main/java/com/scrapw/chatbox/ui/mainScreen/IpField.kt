@@ -27,7 +27,7 @@ fun IpField(
         verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
-            value = chatboxViewModel.ipAddressText.value,
+            value = uiState.ipAddress,
             onValueChange = {
                 chatboxViewModel.onIpAddressChange(it)
             },
