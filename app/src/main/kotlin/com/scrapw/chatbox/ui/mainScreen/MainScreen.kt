@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.MessengerUiState
 
@@ -23,14 +24,31 @@ fun MainScreen(
     ),
     uiState: MessengerUiState = MessengerUiState()
 ) {
+
+    val displayIpState =
+        rememberPreferenceDataStoreBooleanSettingState(
+            key = "display_ip",
+            defaultValue = true,
+            dataStore = chatboxViewModel.dataStore
+        )
+
+    val displayMessageOptionsState =
+        rememberPreferenceDataStoreBooleanSettingState(
+            key = "display_msg_options",
+            defaultValue = true,
+            dataStore = chatboxViewModel.dataStore
+        )
+
     Column(modifier) {
-//        ChatboxAppBar()
-        Surface(tonalElevation = 2.dp) {
-            IpField(
-                chatboxViewModel,
-                uiState
-            )
+        if (displayIpState.value) {
+            Surface(tonalElevation = 2.dp) {
+                IpField(
+                    chatboxViewModel,
+                    uiState
+                )
+            }
         }
+
         Conversation(
             uiState = chatboxViewModel.conversationUiState,
             onCopyPressed = chatboxViewModel::onMessageTextChange,
@@ -44,7 +62,9 @@ fun MainScreen(
             )
         ) {
             Column(Modifier.padding(top = 10.dp)) {
-                OptionList(chatboxViewModel, uiState, true)
+                if (displayMessageOptionsState.value) {
+                    OptionList(chatboxViewModel, uiState, true)
+                }
                 MessageField(
                     chatboxViewModel
                 )
