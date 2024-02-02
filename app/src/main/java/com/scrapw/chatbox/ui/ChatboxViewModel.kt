@@ -34,6 +34,8 @@ class ChatboxViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
+    val dataStore = userPreferencesRepository.dataStore
+
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {

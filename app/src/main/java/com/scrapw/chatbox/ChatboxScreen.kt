@@ -123,6 +123,7 @@ fun ChatboxApp(
             composable(route = ChatboxScreen.Settings.name) {
 //                val context = LocalContext.current
                 SettingsScreen(
+                    chatboxViewModel = chatboxViewModel
                 )
             }
         }
