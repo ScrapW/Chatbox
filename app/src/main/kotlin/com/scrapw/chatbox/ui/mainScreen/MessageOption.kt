@@ -34,10 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
+import com.scrapw.chatbox.dataStore
 import com.scrapw.chatbox.ui.ChatboxViewModel
+import com.scrapw.chatbox.ui.HapticConstants
 import com.scrapw.chatbox.ui.MessengerUiState
 
 private data class Option(
@@ -59,13 +64,32 @@ fun ChipOption(
         if (isChecked) MaterialTheme.colorScheme.primary
         else Color.Gray
 
+    val view = LocalView.current
+    val buttonHapticState =
+        rememberPreferenceDataStoreBooleanSettingState(
+            key = "button_haptic",
+            defaultValue = true,
+            dataStore = LocalContext.current.dataStore
+        )
+
     Crossfade(
         targetState = Pair(isChecked, iconColor),
         animationSpec = tween(500), label = ""
     ) { (isChecked, iconColor) ->
         FilterChip(
             selected = isChecked,
-            onClick = { onChange(!isChecked) },
+            onClick = {
+                onChange(!isChecked)
+                if (buttonHapticState.value) {
+                    view.performHapticFeedback(
+                        if (isChecked) {
+                            HapticConstants.optionToggleOn
+                        } else {
+                            HapticConstants.optionToggleOff
+                        }
+                    )
+                }
+            },
             label = { Text(description) },
             leadingIcon = {
                 Icon(

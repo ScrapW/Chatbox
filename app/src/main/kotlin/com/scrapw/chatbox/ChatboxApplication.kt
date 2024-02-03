@@ -9,7 +9,7 @@ import com.scrapw.chatbox.data.UserPreferencesRepository
 
 
 private const val USER_PREFERENCE_NAME = "user_preferences"
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = USER_PREFERENCE_NAME
 )
 

@@ -10,8 +10,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
 import com.alorma.compose.settings.ui.SettingsSwitch
+import com.scrapw.chatbox.dataStore
 import com.scrapw.chatbox.ui.ChatboxViewModel
 
 
@@ -89,24 +91,24 @@ fun SettingsScreen(
         )
 
 
-        // Send button vibration
-        val sendButtonVibrationState =
+        // Button haptic
+        val buttonHapticState =
             rememberPreferenceDataStoreBooleanSettingState(
-                key = "vibration_when_send",
+                key = "button_haptic",
                 defaultValue = true,
-                dataStore = chatboxViewModel.dataStore
+                dataStore = LocalContext.current.dataStore
             )
 
         SettingsSwitch(
             icon = {
                 Icon(
                     imageVector = Icons.Default.Vibration,
-                    contentDescription = "Vibration"
+                    contentDescription = "Haptic"
                 )
             },
-            state = sendButtonVibrationState,
-            title = { Text(text = "Send button vibration") },
-            subtitle = { Text(text = "Vibrates when you click the send button.") }
+            state = buttonHapticState,
+            title = { Text(text = "Button haptic") },
+            subtitle = { Text(text = "Provide haptic feedback when touch buttons in message screen.") }
         )
     }
 }
