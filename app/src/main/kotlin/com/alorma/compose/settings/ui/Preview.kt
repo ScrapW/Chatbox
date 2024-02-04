@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Checkbox
@@ -29,17 +31,19 @@ internal fun SettingsPreview() {
         val storage = rememberBooleanSettingState(defaultValue = true)
         var rememberCheckBoxState by remember { mutableStateOf(true) }
 
-        Column {
+        Column(
+            Modifier.verticalScroll(rememberScrollState())
+        ) {
             SettingsCheckbox(
                 state = storage,
                 icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Hello") },
+                title = { Text(text = "Settings Checkbox") },
                 subtitle = { Text(text = "This is a longer text") },
                 onCheckedChange = { },
             )
 
             SettingsGroup(
-                title = { Text(text = "Title") },
+                title = { Text(text = "Settings group title") },
             ) {
                 Box(
                     modifier = Modifier
@@ -54,7 +58,7 @@ internal fun SettingsPreview() {
             SettingsList(
                 items = listOf("Banana", "Kiwi", "Pineapple"),
                 icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Hello") },
+                title = { Text(text = "Settings List") },
                 subtitle = { Text(text = "This is a longer text") },
             )
 
@@ -64,21 +68,21 @@ internal fun SettingsPreview() {
 //            SettingsListDropdown(
 //                items = listOf("Banana", "Kiwi", "Pineapple"),
 //                icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-//                title = { Text(text = "Hello") },
+//                title = { Text(text = "Settings List Dropdown") },
 //                subtitle = { Text(text = "This is a longer text") },
 //            )
 
             SettingsListMultiSelect(
                 items = listOf("Banana", "Kiwi", "Pineapple"),
                 icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Hello") },
+                title = { Text(text = "Settings List Multi Select") },
                 subtitle = { Text(text = "This is a longer text") },
                 confirmButton = "Confirm"
             )
 
             SettingsMenuLink(
                 icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Hello") },
+                title = { Text(text = "Settings Menu Link") },
                 subtitle = { Text(text = "This is a longer text") },
                 action = {
                     Checkbox(checked = rememberCheckBoxState, onCheckedChange = { newState ->
@@ -89,14 +93,34 @@ internal fun SettingsPreview() {
 
             SettingsSlider(
                 state = rememberFloatSettingState(),
-                title = { Text(text = "Hello") }
+                title = { Text(text = "Settings Slider") }
             )
 
             SettingsSwitch(
                 state = storage,
                 icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Hello") },
+                title = { Text(text = "Settings Switch") },
                 subtitle = { Text(text = "This is a longer text") },
+                onCheckedChange = { },
+            )
+
+            SettingsSwitch(
+                state = storage,
+                icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
+                title = { Text(text = "Settings Switch") },
+                onCheckedChange = { },
+            )
+
+            SettingsSwitch(
+                state = storage,
+                title = { Text(text = "Settings Switch") },
+                subtitle = { Text(text = "This is a longer text") },
+                onCheckedChange = { },
+            )
+
+            SettingsSwitch(
+                state = storage,
+                title = { Text(text = "Settings Switch") },
                 onCheckedChange = { },
             )
         }
