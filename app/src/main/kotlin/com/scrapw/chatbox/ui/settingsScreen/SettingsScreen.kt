@@ -15,6 +15,7 @@ import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStore
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.scrapw.chatbox.dataStore
 import com.scrapw.chatbox.ui.ChatboxViewModel
+import com.scrapw.chatbox.ui.SettingsSubtitle
 
 
 @Composable
@@ -24,6 +25,7 @@ fun SettingsScreen(
     Column(Modifier.fillMaxSize()) {
 
         // [Layout]
+        SettingsSubtitle(text = "Layout")
         // Display IP field
         val displayIpState =
             rememberPreferenceDataStoreBooleanSettingState(
