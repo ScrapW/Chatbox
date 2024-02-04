@@ -25,7 +25,8 @@ internal fun SettingsTileScaffold(
     action: (@Composable (Boolean) -> Unit)? = null,
     actionDivider: Boolean = false,
 ) {
-    val minHeight = if (subtitle == null) 72.dp else 88.dp
+//    val minHeight = if (subtitle == null) 72.dp else 88.dp
+    val minHeight = 0.dp
     ListItem(
         modifier = Modifier
             .height(IntrinsicSize.Min)
