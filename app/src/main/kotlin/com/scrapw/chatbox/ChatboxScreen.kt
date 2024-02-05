@@ -1,9 +1,6 @@
 package com.scrapw.chatbox
 
 import android.os.Build
-import android.view.WindowInsets
-import android.view.WindowInsetsController
-import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -25,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.common.ChatboxAppBar
+import com.scrapw.chatbox.ui.common.SetFullscreen
 import com.scrapw.chatbox.ui.mainScreen.MainScreen
 import com.scrapw.chatbox.ui.settingsScreen.SettingsScreen
 
@@ -53,7 +50,7 @@ fun ChatboxApp(
         backStackEntry?.destination?.route ?: ChatboxScreen.Main.name
     )
 
-    setFullscreen(fullscreenState.value && currentScreen == ChatboxScreen.Main)
+    SetFullscreen(fullscreenState.value && currentScreen == ChatboxScreen.Main)
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
@@ -95,33 +92,3 @@ fun ChatboxApp(
     }
 }
 
-@Composable
-fun setFullscreen(value: Boolean) {
-    val window = LocalContext.current.getActivity()?.window ?: return
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val controller = window.insetsController ?: return
-
-        if (value) {
-            controller.hide(WindowInsets.Type.statusBars())
-            controller.hide(WindowInsets.Type.navigationBars())
-            controller.systemBarsBehavior =
-                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        } else {
-            controller.show(WindowInsets.Type.statusBars())
-            controller.show(WindowInsets.Type.navigationBars())
-        }
-    } else {
-        @Suppress("DEPRECATION")
-        if (value) {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
-        } else {
-            window.clearFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
-        }
-    }
-}
