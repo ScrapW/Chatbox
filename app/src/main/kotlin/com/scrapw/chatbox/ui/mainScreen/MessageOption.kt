@@ -40,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
-import com.scrapw.chatbox.ui.HapticConstants
 import com.scrapw.chatbox.ui.MessengerUiState
+import com.scrapw.chatbox.ui.common.HapticConstants
 
 private data class Option(
     val description: String,

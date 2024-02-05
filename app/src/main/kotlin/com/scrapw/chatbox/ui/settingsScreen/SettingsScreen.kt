@@ -8,14 +8,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Vibration
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.alorma.compose.settings.ui.SettingsSubGroup
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
-import com.scrapw.chatbox.ui.SettingsSubtitle
 
 
 @Composable
@@ -29,49 +27,46 @@ fun SettingsScreen(
     ) {
 
         // [Layout]
-        SettingsSubtitle(text = "Layout")
+        SettingsSubGroup("Layout") {
+            // Display IP field
+            SettingsSwitch(
+                state = SettingsStates.displayIpState(),
+                title = "Display IP edit bar"
+            )
 
-        // Display IP field
-        SettingsSwitch(
-            state = SettingsStates.displayIpState(),
-            title = { Text(text = "Display IP edit bar") }
-        )
+            // Display message options
+            SettingsSwitch(
+                state = SettingsStates.displayMessageOptionsState(),
+                title = "Display message options"
+            )
+        }
 
-        // Display message options
-        SettingsSwitch(
-            state = SettingsStates.displayMessageOptionsState(),
-            title = { Text(text = "Display message options") }
-        )
+        SettingsSubGroup("Accessibility") {
+            // [Accessibility]
 
-        // [Accessibility]
+            // Fullscreen
+            SettingsSwitch(
+                state = SettingsStates.fullscreenState(),
+                icon = Icons.Default.Fullscreen,
+                title = "Fullscreen",
+                subtitle = "Fullscreen message screen."
+            )
 
-        // Fullscreen
-        SettingsSwitch(
-            icon = {
-                Icon(
-                    imageVector = Icons.Default.Fullscreen,
-                    contentDescription = "Fullscreen"
-                )
-            },
-            state = SettingsStates.fullscreenState(),
-            title = { Text(text = "Fullscreen") },
-            subtitle = { Text(text = "Fullscreen message screen.") }
-        )
+            // Always show keyboard
+            SettingsSwitch(
+                state = SettingsStates.alwaysShowKeyboardState(),
+                icon = Icons.Default.Keyboard,
+                title = "Always show keyboard",
+                subtitle = "Keep your keyboard pop up when in message screen."
+            )
 
-        // Always show keyboard
-        SettingsSwitch(
-            icon = { Icon(imageVector = Icons.Default.Keyboard, contentDescription = "Keyboard") },
-            state = SettingsStates.alwaysShowKeyboardState(),
-            title = { Text(text = "Always show keyboard") },
-            subtitle = { Text(text = "Keep your keyboard pop up when in message screen.") }
-        )
-
-        // Button haptic
-        SettingsSwitch(
-            icon = { Icon(imageVector = Icons.Default.Vibration, contentDescription = "Haptic") },
-            state = SettingsStates.buttonHapticState(),
-            title = { Text(text = "Button haptic") },
-            subtitle = { Text(text = "Provide haptic feedback when touch buttons in message screen.") }
-        )
+            // Button haptic
+            SettingsSwitch(
+                state = SettingsStates.buttonHapticState(),
+                icon = Icons.Default.Vibration,
+                title = "Button haptic",
+                subtitle = "Provide haptic feedback when touch buttons in message screen."
+            )
+        }
     }
 }

@@ -35,7 +35,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.scrapw.chatbox.data.SettingsStates
-import com.scrapw.chatbox.ui.HapticConstants
+import com.scrapw.chatbox.ui.common.HapticConstants
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
 import java.time.Instant
 import java.time.ZoneId

@@ -24,7 +24,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
-import com.scrapw.chatbox.ui.HapticConstants
+import com.scrapw.chatbox.ui.common.HapticConstants
 
 
 @Composable
