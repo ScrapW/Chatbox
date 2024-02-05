@@ -30,7 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
+import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.mainScreen.MainScreen
 import com.scrapw.chatbox.ui.settingsScreen.SettingsScreen
@@ -95,12 +95,7 @@ fun ChatboxApp(
 
 ) {
 
-    val fullscreenState =
-        rememberPreferenceDataStoreBooleanSettingState(
-            key = "fullscreen",
-            defaultValue = false,
-            dataStore = chatboxViewModel.dataStore
-        )
+    val fullscreenState = SettingsStates.fullscreenState()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
 

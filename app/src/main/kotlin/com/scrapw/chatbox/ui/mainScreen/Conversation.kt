@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontStyle
@@ -35,8 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
-import com.scrapw.chatbox.dataStore
+import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.HapticConstants
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
 import java.time.Instant
@@ -163,12 +161,7 @@ fun Conversation(
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
-    val buttonHapticState =
-        rememberPreferenceDataStoreBooleanSettingState(
-            key = "button_haptic",
-            defaultValue = true,
-            dataStore = LocalContext.current.dataStore
-        )
+    val buttonHapticState = SettingsStates.buttonHapticState()
 
 
     Box(modifier) {

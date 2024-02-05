@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
+import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.MessengerUiState
 
@@ -25,19 +25,8 @@ fun MainScreen(
     uiState: MessengerUiState = MessengerUiState()
 ) {
 
-    val displayIpState =
-        rememberPreferenceDataStoreBooleanSettingState(
-            key = "display_ip",
-            defaultValue = true,
-            dataStore = chatboxViewModel.dataStore
-        )
-
-    val displayMessageOptionsState =
-        rememberPreferenceDataStoreBooleanSettingState(
-            key = "display_msg_options",
-            defaultValue = true,
-            dataStore = chatboxViewModel.dataStore
-        )
+    val displayIpState = SettingsStates.displayIpState()
+    val displayMessageOptionsState = SettingsStates.displayMessageOptionsState()
 
     Column(modifier) {
         if (displayIpState.value) {

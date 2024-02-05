@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
+import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.HapticConstants
 
@@ -61,12 +61,7 @@ fun MessageField(
         )
 
         val view = LocalView.current
-        val buttonHapticState =
-            rememberPreferenceDataStoreBooleanSettingState(
-                key = "button_haptic",
-                defaultValue = true,
-                dataStore = chatboxViewModel.dataStore
-            )
+        val buttonHapticState = SettingsStates.buttonHapticState()
 
         Button(
             modifier = Modifier.fillMaxHeight(),

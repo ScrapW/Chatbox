@@ -34,13 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
-import com.scrapw.chatbox.dataStore
+import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.HapticConstants
 import com.scrapw.chatbox.ui.MessengerUiState
@@ -65,12 +63,7 @@ fun ChipOption(
         else Color.Gray
 
     val view = LocalView.current
-    val buttonHapticState =
-        rememberPreferenceDataStoreBooleanSettingState(
-            key = "button_haptic",
-            defaultValue = true,
-            dataStore = LocalContext.current.dataStore
-        )
+    val buttonHapticState = SettingsStates.buttonHapticState()
 
     Crossfade(
         targetState = Pair(isChecked, iconColor),
