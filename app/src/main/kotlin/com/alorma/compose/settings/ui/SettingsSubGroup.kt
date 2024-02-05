@@ -19,6 +19,20 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SettingsSubGroup(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable ColumnScope.() -> Unit,
+) {
+    SettingsSubGroup(
+        modifier = modifier,
+        title = { Text(title) },
+        content = content
+    )
+}
+
+
+@Composable
+fun SettingsSubGroup(
     modifier: Modifier = Modifier,
     title: @Composable (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit,
