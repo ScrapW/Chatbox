@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import com.alorma.compose.settings.storage.base.SettingValueState
@@ -22,6 +23,40 @@ import com.alorma.compose.settings.storage.base.getValue
 import com.alorma.compose.settings.storage.base.rememberBooleanSettingState
 import com.alorma.compose.settings.storage.base.setValue
 import com.alorma.compose.settings.ui.internal.SettingsTileScaffold
+
+@Composable
+fun SettingsSwitch(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    state: SettingValueState<Boolean> = rememberBooleanSettingState(),
+    icon: ImageVector? = null,
+    title: String,
+    subtitle: String? = null,
+    switchColors: SwitchColors = SwitchDefaults.colors(),
+    onCheckedChange: (Boolean) -> Unit = {},
+) {
+    SettingsSwitch(
+        modifier = modifier,
+        enabled = enabled,
+        state = state,
+        icon = icon?.let {
+            {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null
+                )
+            }
+        },
+        title = { Text(title) },
+        subtitle = subtitle?.let {
+            {
+                Text(subtitle)
+            }
+        },
+        switchColors = switchColors,
+        onCheckedChange = onCheckedChange
+    )
+}
 
 @Composable
 fun SettingsSwitch(
