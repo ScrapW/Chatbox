@@ -1,7 +1,5 @@
 package com.scrapw.chatbox
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,7 +29,6 @@ enum class ChatboxScreen(@StringRes val title: Int) {
     Settings(title = R.string.settings)
 }
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Composable
 fun ChatboxApp(
     modifier: Modifier = Modifier,
