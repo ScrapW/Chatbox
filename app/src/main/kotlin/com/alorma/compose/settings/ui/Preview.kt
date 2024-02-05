@@ -96,6 +96,14 @@ internal fun SettingsPreview() {
                 title = { Text(text = "Settings Slider") }
             )
 
+            SettingsTextFieldString(
+                title = { Text("SettingsTextFieldString") }
+            )
+
+            SettingsTextFieldInt(
+                title = { Text("SettingsTextFieldInt") }
+            )
+
             SettingsSubGroup(title = { Text(text = "Settings sub group title") }) {
                 SettingsSwitch(
                     state = storage,
