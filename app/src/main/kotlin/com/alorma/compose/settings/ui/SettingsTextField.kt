@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,78 @@ import androidx.core.text.isDigitsOnly
 import com.alorma.compose.settings.storage.base.SettingValueState
 import com.alorma.compose.settings.storage.base.rememberIntSettingState
 import com.alorma.compose.settings.storage.base.rememberStringSettingState
+
+@Composable
+fun SettingsTextFieldString(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    state: SettingValueState<String?> = rememberStringSettingState(),
+    title: String,
+    icon: ImageVector? = null,
+    useValueAsSubtitle: Boolean = true,
+    subtitle: String? = null,
+    action: (@Composable (Boolean) -> Unit)? = null,
+    onValueChanged: ((String) -> Unit)? = null,
+) {
+    SettingsTextFieldString(
+        modifier = modifier,
+        enabled = enabled,
+        state = state,
+        icon = icon?.let {
+            {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null
+                )
+            }
+        },
+        title = { Text(title) },
+        subtitle = subtitle?.let {
+            {
+                Text(subtitle)
+            }
+        },
+        useValueAsSubtitle = useValueAsSubtitle,
+        action = action,
+        onValueChanged = onValueChanged
+    )
+}
+
+@Composable
+fun SettingsTextFieldInt(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    state: SettingValueState<Int> = rememberIntSettingState(),
+    title: String,
+    icon: ImageVector? = null,
+    useValueAsSubtitle: Boolean = true,
+    subtitle: String? = null,
+    action: (@Composable (Boolean) -> Unit)? = null,
+    onValueChanged: ((Int) -> Unit)? = null,
+) {
+    SettingsTextFieldInt(
+        modifier = modifier,
+        enabled = enabled,
+        state = state,
+        icon = icon?.let {
+            {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null
+                )
+            }
+        },
+        title = { Text(title) },
+        subtitle = subtitle?.let {
+            {
+                Text(subtitle)
+            }
+        },
+        useValueAsSubtitle = useValueAsSubtitle,
+        action = action,
+        onValueChanged = onValueChanged
+    )
+}
 
 @Composable
 fun SettingsTextFieldString(
