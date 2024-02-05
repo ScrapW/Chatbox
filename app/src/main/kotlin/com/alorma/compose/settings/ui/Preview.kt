@@ -96,33 +96,45 @@ internal fun SettingsPreview() {
                 title = { Text(text = "Settings Slider") }
             )
 
-            SettingsSwitch(
-                state = storage,
-                icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Settings Switch") },
-                subtitle = { Text(text = "This is a longer text") },
-                onCheckedChange = { },
-            )
+            SettingsSubGroup(title = { Text(text = "Settings sub group title") }) {
+                SettingsSwitch(
+                    state = storage,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear"
+                        )
+                    },
+                    title = { Text(text = "Settings Switch") },
+                    subtitle = { Text(text = "This is a longer text") },
+                    onCheckedChange = { },
+                )
 
-            SettingsSwitch(
-                state = storage,
-                icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
-                title = { Text(text = "Settings Switch") },
-                onCheckedChange = { },
-            )
+                SettingsSwitch(
+                    state = storage,
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Clear,
+                            contentDescription = "Clear"
+                        )
+                    },
+                    title = { Text(text = "Settings Switch") },
+                    onCheckedChange = { },
+                )
 
-            SettingsSwitch(
-                state = storage,
-                title = { Text(text = "Settings Switch") },
-                subtitle = { Text(text = "This is a longer text") },
-                onCheckedChange = { },
-            )
+                SettingsSwitch(
+                    state = storage,
+                    title = { Text(text = "Settings Switch") },
+                    subtitle = { Text(text = "This is a longer text") },
+                    onCheckedChange = { },
+                )
 
-            SettingsSwitch(
-                state = storage,
-                title = { Text(text = "Settings Switch") },
-                onCheckedChange = { },
-            )
+                SettingsSwitch(
+                    state = storage,
+                    title = { Text(text = "Settings Switch") },
+                    onCheckedChange = { },
+                )
+            }
         }
     }
 }
