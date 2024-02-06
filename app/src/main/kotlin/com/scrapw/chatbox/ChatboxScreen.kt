@@ -53,6 +53,7 @@ fun ChatboxApp(
 
     Scaffold(
         topBar = {
+            //TODO: Animation Fix
             ChatboxAppBar(
                 currentScreen = currentScreen,
                 canNavigateBack = navController.previousBackStackEntry != null,
