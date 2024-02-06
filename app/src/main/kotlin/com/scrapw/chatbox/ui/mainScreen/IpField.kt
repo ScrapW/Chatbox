@@ -43,7 +43,7 @@ fun IpField(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    chatboxViewModel.ipAddressApply()
+                    chatboxViewModel.ipAddressApply(uiState.ipAddress)
                 }
             )
         )

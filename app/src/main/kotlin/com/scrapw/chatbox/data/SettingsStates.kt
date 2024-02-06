@@ -4,9 +4,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import com.alorma.compose.settings.storage.datastore.GenericPreferenceDataStoreSettingValueState
 import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreBooleanSettingState
+import com.alorma.compose.settings.storage.datastore.rememberPreferenceDataStoreIntSettingState
 import com.scrapw.chatbox.dataStore
 
 object SettingsStates {
+
+    @Composable
+    fun ipAddress(): GenericPreferenceDataStoreSettingValueState<String> {
+        return rememberPreferenceDataStoreStringSettingState(
+            key = "ip_address",
+            defaultValue = "127.0.0.1",
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
+    fun port(): GenericPreferenceDataStoreSettingValueState<Int> {
+        return rememberPreferenceDataStoreIntSettingState(
+            key = "port",
+            defaultValue = 9000,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+
     @Composable
     fun displayIpState(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(

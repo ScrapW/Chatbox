@@ -34,8 +34,6 @@ class ChatboxViewModel(
     private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    val dataStore = userPreferencesRepository.dataStore
-
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -99,15 +97,15 @@ class ChatboxViewModel(
         userInputIpState.value = ip
     }
 
-    fun ipAddressApply() {
+    fun ipAddressApply(address: String) {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO) {
-                chatboxOSC.ipAddress = messengerUiState.value.ipAddress
+                chatboxOSC.ipAddress = address
                 isAddressResolvable.value = chatboxOSC.addressResolvable
             }
         }
         viewModelScope.launch {
-            userPreferencesRepository.saveIpAddress(messengerUiState.value.ipAddress)
+            userPreferencesRepository.saveIpAddress(address)
         }
     }
 

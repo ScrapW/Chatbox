@@ -6,12 +6,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
-import androidx.compose.material.icons.filled.Keyboard
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.alorma.compose.settings.ui.SettingsSubGroup
 import com.alorma.compose.settings.ui.SettingsSwitch
+import com.alorma.compose.settings.ui.SettingsTextFieldString
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 
@@ -25,6 +25,18 @@ fun SettingsScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+
+        // [Address]
+        SettingsSubGroup("Address") {
+            val settingsState = SettingsStates.ipAddress()
+            SettingsTextFieldString(
+                state = settingsState,
+                title = "IP",
+                onSubmit = {
+                    chatboxViewModel.ipAddressApply(settingsState.value)
+                }
+            )
+        }
 
         // [Layout]
         SettingsSubGroup("Layout") {
@@ -52,13 +64,13 @@ fun SettingsScreen(
                 subtitle = "Fullscreen message screen."
             )
 
-            // Always show keyboard
-            SettingsSwitch(
-                state = SettingsStates.alwaysShowKeyboardState(),
-                icon = Icons.Default.Keyboard,
-                title = "Always show keyboard",
-                subtitle = "Keep your keyboard pop up when in message screen."
-            )
+//            // Always show keyboard
+//            SettingsSwitch(
+//                state = SettingsStates.alwaysShowKeyboardState(),
+//                icon = Icons.Default.Keyboard,
+//                title = "Always show keyboard",
+//                subtitle = "Keep your keyboard pop up when in message screen."
+//            )
 
             // Button haptic
             SettingsSwitch(
