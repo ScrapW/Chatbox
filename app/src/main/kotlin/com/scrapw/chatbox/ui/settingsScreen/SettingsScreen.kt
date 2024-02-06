@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.alorma.compose.settings.ui.SettingsSubGroup
 import com.alorma.compose.settings.ui.SettingsSwitch
+import com.alorma.compose.settings.ui.SettingsTextFieldInt
 import com.alorma.compose.settings.ui.SettingsTextFieldString
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
@@ -27,13 +28,22 @@ fun SettingsScreen(
     ) {
 
         // [Address]
-        SettingsSubGroup("Address") {
-            val settingsState = SettingsStates.ipAddress()
+        SettingsSubGroup("OSC Host") {
+            val ipAddressState = SettingsStates.ipAddress()
             SettingsTextFieldString(
-                state = settingsState,
-                title = "IP",
+                state = ipAddressState,
+                title = "IP Address",
                 onSubmit = {
-                    chatboxViewModel.ipAddressApply(settingsState.value)
+                    chatboxViewModel.ipAddressApply(ipAddressState.value)
+                }
+            )
+
+            val portState = SettingsStates.port()
+            SettingsTextFieldInt(
+                state = portState,
+                title = "Port",
+                onSubmit = {
+                    chatboxViewModel.portApply(portState.value)
                 }
             )
         }

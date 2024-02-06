@@ -13,7 +13,7 @@ import java.net.UnknownHostException
 
 class ChatboxOSC(
     ipAddress: String,
-    val port: Int
+    var port: Int
 ) {
 
     var addressResolvable = true
@@ -22,7 +22,7 @@ class ChatboxOSC(
     var ipAddress = ipAddress
         set(value) {
             Log.d("IP", "IP Address $field -> $value")
-            
+
             field = value
             try {
                 inetAddress = InetAddress.getByName(value)

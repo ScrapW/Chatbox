@@ -109,6 +109,13 @@ class ChatboxViewModel(
         }
     }
 
+    fun portApply(port: Int) {
+        chatboxOSC.port = port
+        viewModelScope.launch {
+            userPreferencesRepository.savePort(port)
+        }
+    }
+
 
     val isAddressResolvable = mutableStateOf(true)
     fun onMessageTextChange(message: TextFieldValue) {
