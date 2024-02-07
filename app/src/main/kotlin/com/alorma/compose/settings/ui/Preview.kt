@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Web
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -143,6 +144,13 @@ internal fun SettingsPreview() {
                     onCheckedChange = { },
                 )
             }
+
+            SettingsUrl(
+                url = "https://example.com",
+                icon = { Icon(imageVector = Icons.Default.Web, contentDescription = null) },
+                title = { Text(text = "Settings Url Preview") },
+//                subtitle = { Text(text = "This is a longer text") }
+            )
         }
     }
 }
