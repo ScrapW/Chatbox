@@ -41,7 +41,7 @@ fun SettingsSubGroup(
         Column(
             modifier = modifier.fillMaxWidth(),
         ) {
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(6.dp))
             if (title != null) {
                 SettingsSubGroupTitle(title)
             }
