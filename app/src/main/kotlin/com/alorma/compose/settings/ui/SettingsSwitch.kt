@@ -2,6 +2,7 @@ package com.alorma.compose.settings.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.alorma.compose.settings.storage.base.SettingValueState
 import com.alorma.compose.settings.storage.base.getValue
 import com.alorma.compose.settings.storage.base.rememberBooleanSettingState
@@ -43,7 +45,8 @@ fun SettingsSwitch(
             {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null
+                    contentDescription = null,
+                    Modifier.size(24.dp)
                 )
             }
         },

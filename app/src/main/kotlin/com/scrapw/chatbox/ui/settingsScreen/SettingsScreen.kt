@@ -6,20 +6,27 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fullscreen
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LiveHelp
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSubGroup
 import com.alorma.compose.settings.ui.SettingsSwitch
 import com.alorma.compose.settings.ui.SettingsTextFieldInt
 import com.alorma.compose.settings.ui.SettingsTextFieldString
+import com.alorma.compose.settings.ui.SettingsUrl
+import com.scrapw.chatbox.ChatboxScreen
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 
 
 @Composable
 fun SettingsScreen(
-    chatboxViewModel: ChatboxViewModel
+    chatboxViewModel: ChatboxViewModel,
+    navController: NavController
 ) {
     Column(
         Modifier
@@ -88,6 +95,21 @@ fun SettingsScreen(
                 icon = Icons.Default.Vibration,
                 title = "Button haptic",
                 subtitle = "Provide haptic feedback when touch buttons in message screen."
+            )
+        }
+
+        SettingsSubGroup("Information") {
+            SettingsMenuLink(
+                icon = Icons.Default.Info,
+                title = "About"
+            ) {
+                navController.navigate(ChatboxScreen.About.name)
+            }
+            SettingsUrl(
+                icon = Icons.Default.LiveHelp,
+                title = "FAQ",
+                url = "https://github.com/ScrapW/Chatbox",
+                useUrlAsSubtitle = false
             )
         }
     }

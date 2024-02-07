@@ -3,6 +3,7 @@ package com.alorma.compose.settings.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Checkbox
@@ -17,8 +18,54 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.alorma.compose.settings.ui.internal.SettingsTileScaffold
+
+@Composable
+fun SettingsMenuLink(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    title: String,
+    subtitle: String? = null,
+    action: (@Composable (Boolean) -> Unit)? = null,
+    onClick: () -> Unit,
+) {
+    Surface {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .clickable(
+                    enabled = enabled,
+                    onClick = onClick,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            SettingsTileScaffold(
+                enabled = enabled,
+                icon = icon?.let {
+                    {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            Modifier.size(24.dp)
+                        )
+                    }
+                },
+                title = { Text(title) },
+                subtitle = subtitle?.let {
+                    {
+                        Text(subtitle)
+                    }
+                },
+                action = action,
+                actionDivider = true,
+            )
+        }
+    }
+}
 
 @Composable
 fun SettingsMenuLink(
@@ -32,7 +79,8 @@ fun SettingsMenuLink(
 ) {
     Surface {
         Row(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
                 .clickable(
                     enabled = enabled,
                     onClick = onClick,

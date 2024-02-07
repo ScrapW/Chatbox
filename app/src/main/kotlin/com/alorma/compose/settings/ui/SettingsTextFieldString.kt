@@ -48,7 +48,8 @@ fun SettingsTextFieldString(
             {
                 Icon(
                     imageVector = icon,
-                    contentDescription = null
+                    contentDescription = null,
+                    Modifier.size(24.dp)
                 )
             }
         },

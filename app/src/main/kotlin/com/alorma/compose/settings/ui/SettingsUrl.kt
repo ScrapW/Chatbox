@@ -35,7 +35,7 @@ fun SettingsUrl(
         modifier = modifier,
         enabled = enabled,
         icon = icon?.let {
-            { Icon(icon, null) }
+            { Icon(icon, null, Modifier.size(24.dp)) }
         },
         title = { Text(title) },
         subtitle = subtitle?.let {

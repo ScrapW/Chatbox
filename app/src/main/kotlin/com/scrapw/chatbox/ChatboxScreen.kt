@@ -21,12 +21,14 @@ import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.common.ChatboxAppBar
 import com.scrapw.chatbox.ui.common.SetFullscreen
 import com.scrapw.chatbox.ui.mainScreen.MainScreen
+import com.scrapw.chatbox.ui.settingsScreen.AboutScreen
 import com.scrapw.chatbox.ui.settingsScreen.SettingsScreen
 
 
 enum class ChatboxScreen(@StringRes val title: Int) {
     Main(title = R.string.app_name),
-    Settings(title = R.string.settings)
+    Settings(title = R.string.settings),
+    About(title = R.string.about)
 }
 
 @Composable
@@ -83,7 +85,14 @@ fun ChatboxApp(
             }
             composable(route = ChatboxScreen.Settings.name) {
                 SettingsScreen(
-                    chatboxViewModel = chatboxViewModel
+                    chatboxViewModel = chatboxViewModel,
+                    navController = navController
+                )
+            }
+            composable(route = ChatboxScreen.About.name) {
+                AboutScreen(
+                    chatboxViewModel = chatboxViewModel,
+                    navController = navController
                 )
             }
         }
