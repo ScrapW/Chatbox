@@ -149,7 +149,7 @@ fun BarOption(
 }
 
 @Composable
-fun OptionList(
+fun MessageOptions(
     chatboxViewModel: ChatboxViewModel = viewModel(factory = ChatboxViewModel.Factory),
     uiState: MessengerUiState = MessengerUiState(),
     useChipsOptions: Boolean = true,
@@ -221,7 +221,7 @@ fun ChipOptionPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ChipsOptionListPreview() {
-    OptionList(useChipsOptions = true)
+    MessageOptions(useChipsOptions = true)
 }
 
 @Preview(showBackground = true)
@@ -238,5 +238,5 @@ fun BarOptionPreview() {
 @Preview(showBackground = true)
 @Composable
 fun BarOptionListPreview() {
-    OptionList(useChipsOptions = false)
+    MessageOptions(useChipsOptions = false)
 }

@@ -52,7 +52,7 @@ fun MainScreen(
         ) {
             Column(Modifier.padding(top = 10.dp)) {
                 if (displayMessageOptionsState.value) {
-                    OptionList(chatboxViewModel, uiState, true)
+                    MessageOptions(chatboxViewModel, uiState, false)
                 }
                 MessageField(
                     chatboxViewModel
