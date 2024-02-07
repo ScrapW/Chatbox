@@ -5,9 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LiveHelp
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -52,6 +55,30 @@ fun SettingsScreen(
                 onSubmit = {
                     chatboxViewModel.portApply(portState.value)
                 }
+            )
+        }
+
+        // [Message]
+        SettingsSubGroup("Message") {
+            SettingsSwitch(
+                state = SettingsStates.messageRealtime(),
+                icon = Icons.Default.FastForward,
+                title = "Real-time sending",
+                subtitle = "Sends what is being typed in real time, even if the send button is not clicked."
+            )
+
+            SettingsSwitch(
+                state = SettingsStates.messageTriggerSfx(),
+                icon = Icons.Default.NotificationsActive,
+                title = "Trigger notification sound",
+                subtitle = "When sent, triggers notification sound for other players."
+            )
+
+            SettingsSwitch(
+                state = SettingsStates.messageSendDirectly(),
+                icon = Icons.Default.Send,
+                title = "Send message directly",
+                subtitle = "If turned off, it will pop up the in-game Chatbox UI will pop up."
             )
         }
 

@@ -29,6 +29,33 @@ object SettingsStates {
 
 
     @Composable
+    fun messageRealtime(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "is_realtime_msg",
+            defaultValue = false,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
+    fun messageTriggerSfx(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "is_trigger_sfx",
+            defaultValue = true,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
+    fun messageSendDirectly(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "is_send_immediately",
+            defaultValue = false,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
     fun displayIpState(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
             key = "display_ip",
