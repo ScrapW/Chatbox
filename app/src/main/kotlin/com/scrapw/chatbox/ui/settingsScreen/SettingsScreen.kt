@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.LiveHelp
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.LiveHelp
 import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -76,9 +76,9 @@ fun SettingsScreen(
 
             SettingsSwitch(
                 state = SettingsStates.messageSendDirectly(),
-                icon = Icons.Default.Send,
+                icon = Icons.AutoMirrored.Default.Send,
                 title = "Send message directly",
-                subtitle = "If turned off, it will pop up the in-game Chatbox UI will pop up."
+                subtitle = "If turned off, it will pop up the in-game UI when sent message."
             )
         }
 
@@ -97,9 +97,8 @@ fun SettingsScreen(
             )
         }
 
+        // [Accessibility]
         SettingsSubGroup("Accessibility") {
-            // [Accessibility]
-
             // Fullscreen
             SettingsSwitch(
                 state = SettingsStates.fullscreenState(),
@@ -133,7 +132,7 @@ fun SettingsScreen(
                 navController.navigate(ChatboxScreen.About.name)
             }
             SettingsUrl(
-                icon = Icons.Default.LiveHelp,
+                icon = Icons.AutoMirrored.Default.LiveHelp,
                 title = "FAQ",
                 url = "https://github.com/ScrapW/Chatbox",
                 useUrlAsSubtitle = false
