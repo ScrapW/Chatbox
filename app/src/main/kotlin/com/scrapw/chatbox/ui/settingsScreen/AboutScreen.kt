@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Update
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import com.alorma.compose.settings.ui.SettingsSubGroup
@@ -26,16 +27,16 @@ fun AboutScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        SettingsSubGroup("About") {
+        SettingsSubGroup(stringResource(R.string.about)) {
             SettingsUrl(
                 icon = ImageVector.vectorResource(R.drawable.github_mark),
-                title = "Source Code",
+                title = stringResource(R.string.source_code),
                 url = "https://github.com/ScrapW/Chatbox"
             )
 
             SettingsUrl(
                 icon = Icons.Default.Update,
-                title = "Check updates",
+                title = stringResource(R.string.check_updates),
                 url = "https://github.com/ScrapW/Chatbox/releases",
                 useUrlAsSubtitle = false
             )

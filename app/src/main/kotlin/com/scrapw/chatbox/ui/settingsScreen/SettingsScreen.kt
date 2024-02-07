@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSubGroup
@@ -22,6 +23,7 @@ import com.alorma.compose.settings.ui.SettingsTextFieldInt
 import com.alorma.compose.settings.ui.SettingsTextFieldString
 import com.alorma.compose.settings.ui.SettingsUrl
 import com.scrapw.chatbox.ChatboxScreen
+import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 
@@ -38,11 +40,11 @@ fun SettingsScreen(
     ) {
 
         // [Address]
-        SettingsSubGroup("OSC Host") {
+        SettingsSubGroup(stringResource(R.string.osc_host)) {
             val ipAddressState = SettingsStates.ipAddress()
             SettingsTextFieldString(
                 state = ipAddressState,
-                title = "IP Address",
+                title = stringResource(R.string.ip_address),
                 onSubmit = {
                     chatboxViewModel.ipAddressApply(ipAddressState.value)
                 }
@@ -51,7 +53,7 @@ fun SettingsScreen(
             val portState = SettingsStates.port()
             SettingsTextFieldInt(
                 state = portState,
-                title = "Port",
+                title = stringResource(R.string.port),
                 onSubmit = {
                     chatboxViewModel.portApply(portState.value)
                 }
@@ -59,81 +61,81 @@ fun SettingsScreen(
         }
 
         // [Message]
-        SettingsSubGroup("Message") {
+        SettingsSubGroup(stringResource(R.string.message)) {
             SettingsSwitch(
                 state = SettingsStates.messageRealtime(),
                 icon = Icons.Default.FastForward,
-                title = "Real-time sending",
-                subtitle = "Sends what is being typed in real time, even if the send button is not clicked."
+                title = stringResource(R.string.real_time_sending),
+                subtitle = stringResource(R.string.real_time_sending_desc)
             )
 
             SettingsSwitch(
                 state = SettingsStates.messageTriggerSfx(),
                 icon = Icons.Default.NotificationsActive,
-                title = "Trigger notification sound",
-                subtitle = "When sent, triggers notification sound for other players."
+                title = stringResource(R.string.trigger_notification_sound),
+                subtitle = stringResource(R.string.trigger_notification_sound_desc)
             )
 
             SettingsSwitch(
                 state = SettingsStates.messageSendDirectly(),
                 icon = Icons.AutoMirrored.Default.Send,
-                title = "Send message directly",
-                subtitle = "If turned off, it will pop up the in-game UI when sent message."
+                title = stringResource(R.string.send_message_directly),
+                subtitle = stringResource(R.string.send_message_directly_desc)
             )
         }
 
         // [Layout]
-        SettingsSubGroup("Layout") {
+        SettingsSubGroup(stringResource(R.string.layout)) {
             // Display IP field
             SettingsSwitch(
                 state = SettingsStates.displayIpState(),
-                title = "Display IP edit bar"
+                title = stringResource(R.string.display_ip_edit_bar)
             )
 
             // Display message options
             SettingsSwitch(
                 state = SettingsStates.displayMessageOptionsState(),
-                title = "Display message options"
+                title = stringResource(R.string.display_message_options)
             )
         }
 
         // [Accessibility]
-        SettingsSubGroup("Accessibility") {
+        SettingsSubGroup(stringResource(R.string.accessibility)) {
             // Fullscreen
             SettingsSwitch(
                 state = SettingsStates.fullscreenState(),
                 icon = Icons.Default.Fullscreen,
-                title = "Fullscreen",
-                subtitle = "Fullscreen message screen."
+                title = stringResource(R.string.fullscreen),
+                subtitle = stringResource(R.string.fullscreen_desc)
             )
 
 //            // Always show keyboard
 //            SettingsSwitch(
 //                state = SettingsStates.alwaysShowKeyboardState(),
 //                icon = Icons.Default.Keyboard,
-//                title = "Always show keyboard",
-//                subtitle = "Keep your keyboard pop up when in message screen."
+//                title = stringResource(R.string.always_show_keyboard),
+//                subtitle = stringResource(R.string.always_show_keyboard_desc)
 //            )
 
             // Button haptic
             SettingsSwitch(
                 state = SettingsStates.buttonHapticState(),
                 icon = Icons.Default.Vibration,
-                title = "Button haptic",
-                subtitle = "Provide haptic feedback when touch buttons in message screen."
+                title = stringResource(R.string.button_haptic),
+                subtitle = stringResource(R.string.button_haptic_desc)
             )
         }
 
-        SettingsSubGroup("Information") {
+        SettingsSubGroup(stringResource(R.string.information)) {
             SettingsMenuLink(
                 icon = Icons.Default.Info,
-                title = "About"
+                title = stringResource(R.string.about)
             ) {
                 navController.navigate(ChatboxScreen.About.name)
             }
             SettingsUrl(
                 icon = Icons.AutoMirrored.Default.LiveHelp,
-                title = "FAQ",
+                title = stringResource(R.string.faq),
                 url = "https://github.com/ScrapW/Chatbox",
                 useUrlAsSubtitle = false
             )

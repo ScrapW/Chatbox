@@ -11,8 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.scrapw.chatbox.R
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.MessengerUiState
 
@@ -36,8 +38,8 @@ fun IpField(
                 .padding(all = 8.dp)
                 .clip(RoundedCornerShape(8.dp)),
             isError = !chatboxViewModel.isAddressResolvable.value,
-            label = { Text("IP Address") },
-            placeholder = { Text("Enter your ip here") },
+            label = { Text(stringResource(R.string.ip_address)) },
+            placeholder = { Text(stringResource(R.string.enter_your_ip_here)) },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
             ),

@@ -20,8 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.common.HapticConstants
@@ -49,7 +51,7 @@ fun MessageField(
                 .fillMaxHeight()
                 .clip(RoundedCornerShape(8.dp)),
             singleLine = true,
-            placeholder = { Text("Write a message...") },
+            placeholder = { Text(stringResource(R.string.write_a_message)) },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Send
             ),

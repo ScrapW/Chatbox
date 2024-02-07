@@ -35,9 +35,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.MessengerUiState
@@ -160,22 +162,22 @@ fun MessageOptions(
 
     val options: List<Option> = listOf(
         Option(
-            "Real-time Message",
-            "Real-time",
+            stringResource(R.string.msg_real_time_long),
+            stringResource(R.string.msg_real_time_short),
             optionIcons.FastForward,
             uiState.isRealtimeMsg,
             chatboxViewModel::onRealtimeMsgChanged
         ),
         Option(
-            "Trigger Notification SFX",
-            "Sound",
+            stringResource(R.string.msg_trigger_notification_sfx_long),
+            stringResource(R.string.msg_trigger_notification_sfx_short),
             optionIcons.NotificationsActive,
             uiState.isTriggerSFX,
             chatboxViewModel::onTriggerSfxChanged
         ),
         Option(
-            "Send Message Immediately",
-            "Direct",
+            stringResource(R.string.msg_send_immediately_long),
+            stringResource(R.string.msg_send_immediately_short),
             optionIcons.Send,
             uiState.isSendImmediately,
             chatboxViewModel::onSendImmediatelyChanged
