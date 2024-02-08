@@ -37,4 +37,5 @@
     <string name="button_haptic_desc">在消息界面提供按钮振动反馈。</string>
     <string name="information">信息</string>
     <string name="faq">FAQ</string>
+    <string name="empty_conversation">(空)</string>
 </resources>
