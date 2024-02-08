@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -16,11 +17,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,8 +41,9 @@ fun SettingsTextFieldString(
     useValueAsSubtitle: Boolean = true,
     subtitle: String? = null,
     action: (@Composable (Boolean) -> Unit)? = null,
+    submitOnDown: Boolean = true,
     onValueChanged: ((String) -> Unit)? = null,
-    onSubmit: ((String) -> Unit)? = null,
+    onSubmit: ((String) -> Unit)? = null
 ) {
     SettingsTextFieldString(
         modifier = modifier,
@@ -61,6 +66,7 @@ fun SettingsTextFieldString(
         },
         useValueAsSubtitle = useValueAsSubtitle,
         action = action,
+        submitOnDown = submitOnDown,
         onValueChanged = onValueChanged,
         onSubmit = onSubmit
     )
@@ -76,8 +82,9 @@ fun SettingsTextFieldString(
     useValueAsSubtitle: Boolean = true,
     subtitle: (@Composable () -> Unit)? = null,
     action: (@Composable (Boolean) -> Unit)? = null,
+    submitOnDown: Boolean = true,
     onValueChanged: ((String) -> Unit)? = null,
-    onSubmit: ((String) -> Unit)? = null,
+    onSubmit: ((String) -> Unit)? = null
 ) {
 
     var showDialog by remember { mutableStateOf(false) }
@@ -111,6 +118,13 @@ fun SettingsTextFieldString(
 
     val scrollState = rememberScrollState()
     var inputState by remember { mutableStateOf(state.value) }
+    val focusRequester = remember { FocusRequester() }
+
+    val submit: () -> Unit = {
+        state.value = inputState
+        showDialog = false
+        onSubmit?.invoke(state.value)
+    }
 
     AlertDialog(
         title = title,
@@ -132,20 +146,25 @@ fun SettingsTextFieldString(
                         inputState = it
                         onValueChanged?.invoke(inputState)
                     },
-                    singleLine = true
+                    singleLine = true,
+                    modifier = Modifier.focusRequester(focusRequester),
+                    keyboardActions = KeyboardActions(
+                        onDone = if (submitOnDown) {
+                            {
+                                submit()
+                                showDialog = false
+                            }
+                        } else {
+                            KeyboardActions.Default.onDone
+                        }
+                    )
                 )
             }
         },
         onDismissRequest = { showDialog = false },
         confirmButton = {
             TextButton(
-                onClick = {
-                    state.value = inputState
-                    showDialog = false
-
-//                    onSubmit?.invoke(state.value ?: "")
-                    onSubmit?.invoke(state.value)
-                }
+                onClick = submit
             ) {
                 Text(
                     text = "OK"
@@ -162,6 +181,10 @@ fun SettingsTextFieldString(
             }
         }
     )
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 }
 
 
