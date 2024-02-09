@@ -31,7 +31,7 @@ object SettingsStates {
     @Composable
     fun messageRealtime(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
-            key = "is_realtime_msg",
+            key = "msg_realtime",
             defaultValue = false,
             dataStore = LocalContext.current.dataStore
         )
@@ -40,7 +40,16 @@ object SettingsStates {
     @Composable
     fun messageTriggerSfx(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
-            key = "is_trigger_sfx",
+            key = "msg_trigger_sfx",
+            defaultValue = true,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
+    fun messageTypingIndicator(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "msg_typing_indicator",
             defaultValue = true,
             dataStore = LocalContext.current.dataStore
         )
@@ -49,8 +58,8 @@ object SettingsStates {
     @Composable
     fun messageSendDirectly(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
-            key = "is_send_immediately",
-            defaultValue = false,
+            key = "msg_send_directly",
+            defaultValue = true,
             dataStore = LocalContext.current.dataStore
         )
     }

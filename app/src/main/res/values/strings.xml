@@ -10,6 +10,8 @@
     <string name="msg_real_time_short">Real-time</string>
     <string name="msg_trigger_notification_sfx_long">Trigger Notification SFX</string>
     <string name="msg_trigger_notification_sfx_short">Sound</string>
+    <string name="msg_typing_indicator_long">Show typing indicator</string>
+    <string name="msg_typing_indicator_short">Indicator</string>
     <string name="msg_send_immediately_long">Send Message Immediately</string>
     <string name="msg_send_immediately_short">Direct</string>
     <string name="source_code">Source Code</string>
@@ -22,6 +24,8 @@
     <string name="real_time_sending_desc">Sends what is being typed in real time, even if the send button is not clicked.</string>
     <string name="trigger_notification_sound">Trigger notification sound</string>
     <string name="trigger_notification_sound_desc">When sent, triggers notification sound for other players.</string>
+    <string name="show_message_typing_indicator">Show message typing indicator</string>
+    <string name="show_message_typing_indicator_desc">When typing, other players will see the typing indicator.</string>
     <string name="send_message_directly">Send message directly</string>
     <string name="send_message_directly_desc">If turned off, it will pop up the in-game UI when sent message.</string>
     <string name="layout">Layout</string>

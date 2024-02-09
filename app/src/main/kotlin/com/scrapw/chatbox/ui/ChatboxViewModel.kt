@@ -67,12 +67,14 @@ class ChatboxViewModel(
         ipFlow,
         userPreferencesRepository.isRealtimeMsg,
         userPreferencesRepository.isTriggerSfx,
+        userPreferencesRepository.isTypingIndicator,
         userPreferencesRepository.isSendImmediately
-    ) { ipAddress, isRealtimeMsg, isTriggerSFX, isSendImmediately ->
+    ) { ipAddress, isRealtimeMsg, isTriggerSFX, isTypingIndicator, isSendImmediately ->
         MessengerUiState(
             ipAddress = ipAddress,
             isRealtimeMsg = isRealtimeMsg,
             isTriggerSFX = isTriggerSFX,
+            isTypingIndicator = isTypingIndicator,
             isSendImmediately = isSendImmediately
         )
     }.stateIn(
@@ -123,7 +125,9 @@ class ChatboxViewModel(
         if (messengerUiState.value.isRealtimeMsg) {
             chatboxOSC.sendRealtimeMessage(message.text)
         } else {
-            chatboxOSC.typing = message.text.isNotEmpty()
+            if (messengerUiState.value.isTypingIndicator) {
+                chatboxOSC.typing = message.text.isNotEmpty()
+            }
         }
     }
 
@@ -136,6 +140,12 @@ class ChatboxViewModel(
     fun onTriggerSfxChanged(isChecked: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveIsTriggerSFX(isChecked)
+        }
+    }
+
+    fun onTypingIndicatorChanged(isChecked: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.saveTypingIndicator(isChecked)
         }
     }
 
@@ -168,5 +178,6 @@ data class MessengerUiState(
     val ipAddress: String = "127.0.0.1",
     val isRealtimeMsg: Boolean = false,
     val isTriggerSFX: Boolean = true,
+    val isTypingIndicator: Boolean = true,
     val isSendImmediately: Boolean = true
 )

@@ -14,7 +14,9 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.navigation.NavController
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSubGroup
@@ -74,6 +76,13 @@ fun SettingsScreen(
                 icon = Icons.Default.NotificationsActive,
                 title = stringResource(R.string.trigger_notification_sound),
                 subtitle = stringResource(R.string.trigger_notification_sound_desc)
+            )
+
+            SettingsSwitch(
+                state = SettingsStates.messageTypingIndicator(),
+                icon = ImageVector.vectorResource(R.drawable.indicator),
+                title = stringResource(R.string.show_message_typing_indicator),
+                subtitle = stringResource(R.string.show_message_typing_indicator_desc)
             )
 
             SettingsSwitch(

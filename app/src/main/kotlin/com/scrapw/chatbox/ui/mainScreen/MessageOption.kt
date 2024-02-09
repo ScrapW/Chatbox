@@ -16,10 +16,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Send
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.NotificationsActive
-import androidx.compose.material.icons.rounded.Send
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -176,9 +177,16 @@ fun MessageOptions(
             chatboxViewModel::onTriggerSfxChanged
         ),
         Option(
+            stringResource(R.string.msg_typing_indicator_long),
+            stringResource(R.string.msg_typing_indicator_short),
+            ImageVector.vectorResource(R.drawable.indicator),
+            uiState.isTypingIndicator,
+            chatboxViewModel::onTypingIndicatorChanged
+        ),
+        Option(
             stringResource(R.string.msg_send_immediately_long),
             stringResource(R.string.msg_send_immediately_short),
-            optionIcons.Send,
+            Icons.AutoMirrored.Rounded.Send,
             uiState.isSendImmediately,
             chatboxViewModel::onSendImmediatelyChanged
         )

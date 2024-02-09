@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-class UserPreferencesRepository(val dataStore: DataStore<Preferences>) {
+class UserPreferencesRepository(private val dataStore: DataStore<Preferences>) {
     private companion object {
         const val TAG = "UserPreferencesRepo"
         const val ERROR_READ = "Error reading preferences."
@@ -21,9 +21,10 @@ class UserPreferencesRepository(val dataStore: DataStore<Preferences>) {
         val IP_ADDRESS = stringPreferencesKey("ip_address")
         val PORT = intPreferencesKey("port")
 
-        val IS_REALTIME_MSG = booleanPreferencesKey("is_realtime_msg")
-        val IS_TRIGGER_SFX = booleanPreferencesKey("is_trigger_sfx")
-        val IS_SEND_IMMEDIATELY = booleanPreferencesKey("is_send_immediately")
+        val MSG_REALTIME = booleanPreferencesKey("msg_realtime")
+        val MSG_TRIGGER_SFX = booleanPreferencesKey("msg_trigger_sfx")
+        val MSG_TYPING_INDICATOR = booleanPreferencesKey("msg_typing_indicator")
+        val MSG_SEND_DIRECTLY = booleanPreferencesKey("msg_send_directly")
     }
 
     val ipAddress = get(IP_ADDRESS, "127.0.0.1")
@@ -36,22 +37,27 @@ class UserPreferencesRepository(val dataStore: DataStore<Preferences>) {
         save(PORT, value)
     }
 
-    val isRealtimeMsg = get(IS_REALTIME_MSG, false)
+    val isRealtimeMsg = get(MSG_REALTIME, false)
 
     suspend fun saveIsRealtimeMsg(value: Boolean) {
-        save(IS_REALTIME_MSG, value)
+        save(MSG_REALTIME, value)
     }
 
-    val isTriggerSfx = get(IS_TRIGGER_SFX, true)
+    val isTriggerSfx = get(MSG_TRIGGER_SFX, true)
 
     suspend fun saveIsTriggerSFX(value: Boolean) {
-        save(IS_TRIGGER_SFX, value)
+        save(MSG_TRIGGER_SFX, value)
     }
 
-    val isSendImmediately = get(IS_SEND_IMMEDIATELY, true)
+    val isTypingIndicator = get(MSG_TYPING_INDICATOR, true)
+    suspend fun saveTypingIndicator(value: Boolean) {
+        save(MSG_TYPING_INDICATOR, value)
+    }
+
+    val isSendImmediately = get(MSG_SEND_DIRECTLY, true)
 
     suspend fun saveIsSendImmediately(value: Boolean) {
-        save(IS_SEND_IMMEDIATELY, value)
+        save(MSG_SEND_DIRECTLY, value)
     }
 
     private fun <T> get(key: Preferences.Key<T>, defaultValue: T): Flow<T> {

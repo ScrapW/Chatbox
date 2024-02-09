@@ -8,9 +8,11 @@
     <string name="enter_your_ip_here">輸入 IP 位址…</string>
     <string name="write_a_message">輸入訊息…</string>
     <string name="msg_real_time_long">實時訊息</string>
-    <string name="msg_real_time_short">實時訊息</string>
+    <string name="msg_real_time_short">實時</string>
     <string name="msg_trigger_notification_sfx_long">訊息提示音</string>
     <string name="msg_trigger_notification_sfx_short">提示音</string>
+    <string name="msg_typing_indicator_long">顯示正在輸入指示器</string>
+    <string name="msg_typing_indicator_short">指示器</string>
     <string name="msg_send_immediately_long">直接傳送</string>
     <string name="msg_send_immediately_short">直接傳送</string>
     <string name="source_code">原始碼</string>
@@ -23,6 +25,8 @@
     <string name="real_time_sending_desc">即使不點擊傳送按鈕也會實時傳送訊息。 </string>
     <string name="trigger_notification_sound">觸發訊息提示音</string>
     <string name="trigger_notification_sound_desc">當訊息傳送的時候，觸發其他玩家的訊息提示音。 </string>
+    <string name="show_message_typing_indicator">顯示輸入指示器</string>
+    <string name="show_message_typing_indicator_desc">輸入的時候，其他玩家會看見輸入指示器。</string>
     <string name="send_message_directly">直接傳送訊息</string>
     <string name="send_message_directly_desc">若關閉，傳送訊息的時候會開啟遊戲內 UI。</string>
     <string name="layout">佈局</string>
