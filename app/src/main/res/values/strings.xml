@@ -41,4 +41,7 @@
     <string name="information">Information</string>
     <string name="faq">FAQ</string>
     <string name="empty_conversation">(Empty)</string>
+    <string name="stashed">Stashed</string>
+    <string name="message_card_copy">Copy this message to message field</string>
+    <string name="message_card_restore">Restore this message to message field</string>
 </resources>

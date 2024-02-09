@@ -1,5 +1,8 @@
 package com.scrapw.chatbox.ui.mainScreen
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,10 +19,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -27,8 +33,11 @@ import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 import com.scrapw.chatbox.ui.common.HapticConstants
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageField(
     chatboxViewModel: ChatboxViewModel,
@@ -65,14 +74,50 @@ fun MessageField(
         val view = LocalView.current
         val buttonHapticState = SettingsStates.buttonHapticState()
 
-        Button(
-            modifier = Modifier.fillMaxHeight(),
-            onClick = {
-                chatboxViewModel.sendMessage()
-                if (buttonHapticState.value) {
-                    view.performHapticFeedback(HapticConstants.send)
+
+        val onSendClick = {
+            chatboxViewModel.sendMessage()
+            if (buttonHapticState.value) {
+                view.performHapticFeedback(HapticConstants.send)
+            }
+        }
+
+        val onSendLongClick = {
+            chatboxViewModel.stashMessage()
+            if (buttonHapticState.value) {
+                view.performHapticFeedback(HapticConstants.send)
+            }
+        }
+
+
+        val interactionSource = remember { MutableInteractionSource() }
+        val viewConfiguration = LocalViewConfiguration.current
+
+        LaunchedEffect(interactionSource) {
+            var isLongClick = false
+
+            interactionSource.interactions.collectLatest { interaction ->
+                when (interaction) {
+                    is PressInteraction.Press -> {
+                        isLongClick = false
+                        delay(viewConfiguration.longPressTimeoutMillis)
+                        isLongClick = true
+                        onSendLongClick()
+                    }
+
+                    is PressInteraction.Release -> {
+                        if (!isLongClick) {
+                            onSendClick()
+                        }
+                    }
                 }
             }
+        }
+
+        Button(
+            onClick = {},
+            modifier = Modifier.fillMaxHeight(),
+            interactionSource = interactionSource
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.Send,

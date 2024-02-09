@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Redo
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.Card
@@ -58,6 +60,17 @@ fun MessageTime(time: Instant?, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun StashedTag(modifier: Modifier = Modifier) {
+    Text(
+        text = stringResource(R.string.stashed),
+        style = MaterialTheme.typography.labelSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.outline,
+        modifier = modifier
+    )
+}
+
+@Composable
 fun CopyButton(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
     IconButton(
         modifier = Modifier.size(30.dp),
@@ -70,11 +83,19 @@ fun CopyButton(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
             )
         }
     ) {
-        Icon(
-            imageVector = Icons.Default.ContentCopy,
-            contentDescription = "Copy message content",
-            modifier = Modifier.size(20.dp)
-        )
+        if (!message.stashed) {
+            Icon(
+                imageVector = Icons.Default.ContentCopy,
+                contentDescription = stringResource(R.string.message_card_copy),
+                modifier = Modifier.size(20.dp)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.Redo,
+                contentDescription = stringResource(R.string.message_card_restore),
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 }
 
@@ -96,11 +117,21 @@ fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
         Column(
             Modifier.padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            Text(
-                text = message.content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            if (!message.stashed) {
+                Text(
+                    text = message.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            } else {
+                Text(
+                    text = message.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontStyle = FontStyle.Italic
+                )
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier
@@ -108,6 +139,10 @@ fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
             ) {
                 MessageTime(message.timestamp, Modifier.align(Alignment.Bottom))
                 Spacer(modifier = Modifier.weight(1f))
+                if (message.stashed) {
+                    StashedTag(Modifier.align(Alignment.Bottom))
+                    Spacer(Modifier.width(12.dp))
+                }
                 CopyButton(message, onCopyPressed)
             }
         }
@@ -143,7 +178,7 @@ fun EmptyConversationList(modifier: Modifier = Modifier) {
     ) {
         Icon(
             imageVector = Icons.Rounded.History,
-            contentDescription = "Copy message content",
+            contentDescription = null,
             modifier = Modifier.size(140.dp),
             tint = MaterialTheme.colorScheme.primaryContainer
         )

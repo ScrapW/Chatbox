@@ -166,6 +166,22 @@ class ChatboxViewModel(
         conversationUiState.addMessage(
             Message(
                 messageText.value.text,
+                false,
+                Instant.now()
+            )
+        )
+
+        messageText.value = TextFieldValue("", TextRange.Zero)
+    }
+
+    fun stashMessage() {
+
+        chatboxOSC.typing = false
+
+        conversationUiState.addMessage(
+            Message(
+                messageText.value.text,
+                true,
                 Instant.now()
             )
         )

@@ -5,7 +5,7 @@ import androidx.compose.runtime.toMutableStateList
 import java.time.Instant
 
 class ConversationUiState(
-    initialMessages: List<Message> = listOf<Message>()
+    initialMessages: List<Message> = listOf()
 ) {
     private val _messages: MutableList<Message> = initialMessages.toMutableStateList()
     val messages: List<Message> = _messages
@@ -19,5 +19,6 @@ class ConversationUiState(
 @Immutable
 data class Message(
     val content: String,
+    val stashed: Boolean = false,
     val timestamp: Instant? = null
 )

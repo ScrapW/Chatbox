@@ -42,4 +42,7 @@
     <string name="information">信息</string>
     <string name="faq">FAQ</string>
     <string name="empty_conversation">(空)</string>
+    <string name="stashed">暂存</string>
+    <string name="message_card_copy">复制这条消息至消息栏</string>
+    <string name="message_card_restore">恢复这条消息至消息栏</string>
 </resources>
