@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.OpenInNew
 import androidx.compose.material.icons.filled.Web
 import androidx.compose.material3.Icon
@@ -80,7 +81,7 @@ fun SettingsUrl(
                 icon = icon,
                 action = {
                     Icon(
-                        Icons.Default.OpenInNew,
+                        Icons.AutoMirrored.Default.OpenInNew,
                         null,
                         Modifier.size(18.dp)
                     )

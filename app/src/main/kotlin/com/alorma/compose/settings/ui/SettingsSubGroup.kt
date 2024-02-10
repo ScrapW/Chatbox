@@ -60,7 +60,7 @@ internal fun SettingsSubGroupTitle(title: @Composable () -> Unit) {
         contentAlignment = Alignment.CenterStart,
     ) {
         val primary = MaterialTheme.colorScheme.primary
-        val titleStyle = MaterialTheme.typography.titleMedium.copy(color = primary)
+        val titleStyle = MaterialTheme.typography.titleSmall.copy(color = primary)
         ProvideTextStyle(value = titleStyle) { title() }
     }
 }
