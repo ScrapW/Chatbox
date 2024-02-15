@@ -1,4 +1,5 @@
 output-metadata.json
+keystore.properties
 
 # Gradle files
 .gradle/
