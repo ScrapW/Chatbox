@@ -26,7 +26,15 @@ object SettingsStates {
             dataStore = LocalContext.current.dataStore
         )
     }
-
+    
+    @Composable
+    fun floatingWindowState(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "floating_window",
+            defaultValue = false,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
 
     @Composable
     fun messageRealtime(): GenericPreferenceDataStoreSettingValueState<Boolean> {

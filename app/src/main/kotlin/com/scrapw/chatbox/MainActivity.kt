@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.scrapw.chatbox.overlay.OverlayDaemon
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
 
 
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
                     ChatboxApp()
                 }
             }
+            OverlayDaemon(this)
         }
     }
 }
