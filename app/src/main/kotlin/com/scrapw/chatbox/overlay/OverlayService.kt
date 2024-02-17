@@ -8,7 +8,10 @@ import android.os.IBinder
 import android.util.Log
 import android.view.MotionEvent
 import android.view.WindowManager
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -22,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
@@ -31,6 +35,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import kotlin.math.roundToInt
 
 // From comments of https://gist.github.com/handstandsam/6ecff2f39da72c0b38c07aa80bbb5a2f
 // https://www.jetpackcompose.app/snippets/OverlayService
@@ -83,7 +88,9 @@ class OverlayService : Service() {
 
         composeView.setContent {
 //            ChatboxTheme {
-            Overlay(::enableKeyboard)
+            OverlayDraggableContainer {
+                Overlay(::enableKeyboard)
+            }
 //            }
         }
 
@@ -149,7 +156,35 @@ class OverlayService : Service() {
             // warning for the user here.
         }
     }
+
+    private var overlayOffset by mutableStateOf(Offset.Zero)
+
+    @Composable
+    fun OverlayDraggableContainer(
+        modifier: Modifier = Modifier,
+        content: @Composable BoxScope.() -> Unit
+    ) =
+        Box(
+            modifier = modifier.pointerInput(Unit) {
+                detectDragGestures { change, dragAmount ->
+                    change.consume()
+
+                    // Update our current offset
+                    val newOffset = overlayOffset + dragAmount
+                    overlayOffset = newOffset
+
+                    // Update the layout params, and then the view
+                    windowParams.apply {
+                        x = overlayOffset.x.roundToInt()
+                        y = overlayOffset.y.roundToInt()
+                    }
+                    windowManager.updateViewLayout(composeView, windowParams)
+                }
+            },
+            content = content
+        )
 }
+
 
 @Composable
 fun Overlay(enableKeyboard: () -> Unit) {
