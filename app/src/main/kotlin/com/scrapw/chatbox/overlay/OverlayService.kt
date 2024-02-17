@@ -4,21 +4,15 @@ import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
+import android.graphics.Rect
 import android.os.IBinder
 import android.util.Log
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.WindowManager
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -42,29 +35,33 @@ import kotlin.math.roundToInt
 
 class OverlayService : Service() {
 
+    lateinit var composeView: ComposeView
 
     private val windowManager get() = getSystemService(WINDOW_SERVICE) as WindowManager
 
-
-    val layoutFlag: Int = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-
-
-    private val windowParams = WindowManager.LayoutParams(
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        WindowManager.LayoutParams.WRAP_CONTENT,
-        layoutFlag,
-        // https://developer.android.com/reference/android/view/WindowManager.LayoutParams
-        // alt: WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-        // WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-//                or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-        PixelFormat.TRANSLUCENT
-    )
+    private var windowParams = WindowManager.LayoutParams().apply {
+        width = WindowManager.LayoutParams.WRAP_CONTENT
+        height = WindowManager.LayoutParams.WRAP_CONTENT
+        format = PixelFormat.TRANSLUCENT
+        type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        windowAnimations = android.R.style.Animation_Dialog
+        gravity = Gravity.START or Gravity.TOP
+        flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+    }
 
     override fun onCreate() {
         super.onCreate()
+        composeView = ComposeView(this)
+
+        val f = Rect().also { composeView.getWindowVisibleDisplayFrame(it) }
+        val w = f.width()
+        val h = f.height()
+
+        setInitPos(w, h)
+
         showOverlay()
     }
 
@@ -77,22 +74,49 @@ class OverlayService : Service() {
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
     }
 
-    lateinit var composeView: ComposeView
+    fun setInitPos(w: Int, h: Int) {
+        windowParams = windowParams.apply {
+            x = w
+            y = (h * 0.7).toInt()
+        }
+        overlayOffset = Offset(x = windowParams.x.toFloat(), y = windowParams.y.toFloat())
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun showOverlay() {
 
 
-        composeView = ComposeView(this)
-
-
         composeView.setContent {
-//            ChatboxTheme {
-            OverlayDraggableContainer {
-                Overlay(::enableKeyboard)
+
+            val expanded = remember { mutableStateOf(false) }
+
+            if (!expanded.value) {
+                OverlayDraggableContainer {
+                    ButtonOverlay {
+                        expanded.value = true
+                        enableKeyboard()
+                    }
+                }
+            } else {
+                MessengerOverlay {
+                    expanded.value = false
+                    disableKeyboard()
+                }
             }
-//            }
+
+            composeView.setOnTouchListener { _, event ->
+                Log.d("action", event.toString())
+                if (event.action == MotionEvent.ACTION_OUTSIDE) {
+                    disableKeyboard()
+                    expanded.value = false
+                    Log.i("Touch Listener", "outside");
+                } else {
+                    Log.i("Touch Listener", "inside");
+                }
+                true
+            }
         }
+
 
         // Trick The ComposeView into thinking we are tracking lifecycle
         val viewModelStoreOwner = object : ViewModelStoreOwner {
@@ -114,23 +138,11 @@ class OverlayService : Service() {
         windowManager.addView(composeView, windowParams)
 
 
-
-        composeView.setOnTouchListener { _, event ->
-            Log.d("action", event.toString())
-            if (event.action == MotionEvent.ACTION_OUTSIDE) {
-                disableKeyboard()
-                Log.i("Touch Listener", "outside");
-            } else {
-                Log.i("Touch Listener", "inside");
-            }
-            true
-        }
     }
 
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
-
 
     private fun enableKeyboard() {
         if (windowParams.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE != 0) {
@@ -157,65 +169,46 @@ class OverlayService : Service() {
         }
     }
 
-    private var overlayOffset by mutableStateOf(Offset.Zero)
+    private var overlayOffset: Offset by mutableStateOf(
+        Offset(
+            windowParams.x.toFloat(),
+            windowParams.y.toFloat()
+        )
+    )
 
     @Composable
     fun OverlayDraggableContainer(
         modifier: Modifier = Modifier,
         content: @Composable BoxScope.() -> Unit
-    ) =
-        Box(
-            modifier = modifier.pointerInput(Unit) {
-                detectDragGestures { change, dragAmount ->
-                    change.consume()
-
-                    // Update our current offset
-                    val newOffset = overlayOffset + dragAmount
-                    overlayOffset = newOffset
-
-                    // Update the layout params, and then the view
-                    windowParams.apply {
-                        x = overlayOffset.x.roundToInt()
-                        y = overlayOffset.y.roundToInt()
+    ) = Box(
+        modifier = modifier.pointerInput(Unit) {
+            detectDragGestures { change, dragAmount ->
+                change.consume()
+                
+                // Update our current offset
+                val newOffset = Offset(
+                    if (windowParams.gravity and Gravity.END == Gravity.END) {
+                        overlayOffset.x - dragAmount.x
+                    } else {
+                        overlayOffset.x + dragAmount.x
+                    },
+                    if (windowParams.gravity and Gravity.BOTTOM == Gravity.BOTTOM) {
+                        overlayOffset.y - dragAmount.y
+                    } else {
+                        overlayOffset.y + dragAmount.y
                     }
-                    windowManager.updateViewLayout(composeView, windowParams)
+                )
+
+                overlayOffset = newOffset
+
+                // Update the layout params, and then the view
+                windowParams.apply {
+                    x = overlayOffset.x.roundToInt()
+                    y = overlayOffset.y.roundToInt()
                 }
-            },
-            content = content
-        )
-}
-
-
-@Composable
-fun Overlay(enableKeyboard: () -> Unit) {
-    Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(
-                onPress = {
-                    Log.d("Overlay gesture", "onPress()")
-                    enableKeyboard()
-                },
-                onDoubleTap = { Log.d("Overlay gesture", "onDoubleTap()") },
-                onLongPress = { Log.d("Overlay gesture", "onLongPress()") },
-                onTap = { Log.d("Overlay gesture", "onTap()") }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp)
-                .wrapContentSize()
-        ) {
-            Text(text = "Hello from Compose")
-
-            var text by remember { mutableStateOf("Hello") }
-
-            TextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Label") }
-            )
-        }
-    }
+                windowManager.updateViewLayout(composeView, windowParams)
+            }
+        },
+        content = content
+    )
 }
