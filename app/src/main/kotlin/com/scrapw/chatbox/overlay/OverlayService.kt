@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,6 +35,15 @@ import kotlin.math.roundToInt
 class OverlayService : Service() {
 
     lateinit var composeView: ComposeView
+    lateinit var msgComposeView: ComposeView
+
+    enum class Window {
+        NONE,
+        BUTTON,
+        MESSENGER
+    }
+
+    var currentWindow = Window.NONE
 
     private val windowManager get() = getSystemService(WINDOW_SERVICE) as WindowManager
 
@@ -52,9 +60,22 @@ class OverlayService : Service() {
                 or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
     }
 
+    private var msgWindowParams = WindowManager.LayoutParams().apply {
+        width = WindowManager.LayoutParams.WRAP_CONTENT
+        height = WindowManager.LayoutParams.WRAP_CONTENT
+        format = PixelFormat.TRANSLUCENT
+        type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        windowAnimations = android.R.style.Animation_Dialog
+        gravity = Gravity.START or Gravity.TOP
+        flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
+    }
+
     override fun onCreate() {
         super.onCreate()
         composeView = ComposeView(this)
+        msgComposeView = ComposeView(this)
 
         val f = Rect().also { composeView.getWindowVisibleDisplayFrame(it) }
         val w = f.width()
@@ -62,13 +83,16 @@ class OverlayService : Service() {
 
         setInitPos(w, h)
 
-        showOverlay()
+        initOverlay()
+
+        switchOverlay(Window.BUTTON)
     }
 
     override fun onDestroy() {
         super.onDestroy()
 
         windowManager.removeViewImmediate(composeView)
+        windowManager.removeViewImmediate(msgComposeView)
 
         val lifecycleOwner = MyLifecycleOwner()
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
@@ -82,63 +106,99 @@ class OverlayService : Service() {
         overlayOffset = Offset(x = windowParams.x.toFloat(), y = windowParams.y.toFloat())
     }
 
+
+//    val expanded = mutableStateOf(false)
+
     @SuppressLint("ClickableViewAccessibility")
-    private fun showOverlay() {
-
-
+    private fun initOverlay() {
         composeView.setContent {
 
-            val expanded = remember { mutableStateOf(false) }
-
-            if (!expanded.value) {
-                OverlayDraggableContainer {
-                    ButtonOverlay {
-                        expanded.value = true
-                        enableKeyboard()
-                    }
+            OverlayDraggableContainer {
+                ButtonOverlay {
+                    switchOverlay(Window.MESSENGER)
                 }
-            } else {
-                MessengerOverlay {
-                    expanded.value = false
-                    disableKeyboard()
-                }
-            }
-
-            composeView.setOnTouchListener { _, event ->
-                Log.d("action", event.toString())
-                if (event.action == MotionEvent.ACTION_OUTSIDE) {
-                    disableKeyboard()
-                    expanded.value = false
-                    Log.i("Touch Listener", "outside");
-                } else {
-                    Log.i("Touch Listener", "inside");
-                }
-                true
             }
         }
 
+        msgComposeView.setContent {
+            MessengerOverlay {
+                switchOverlay(Window.BUTTON)
+            }
+        }
+
+        msgComposeView.setOnTouchListener { _, event ->
+            Log.d("action", event.toString())
+            if (event.action == MotionEvent.ACTION_OUTSIDE) {
+
+                switchOverlay(Window.BUTTON)
+
+                Log.i("Touch Listener", "outside")
+            } else {
+                Log.i("Touch Listener", "inside")
+            }
+            true
+        }
 
         // Trick The ComposeView into thinking we are tracking lifecycle
+
+        registerLifecycle(composeView)
+        registerLifecycle(msgComposeView)
+    }
+
+    private fun registerLifecycle(view: ComposeView) {
         val viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
                 get() = ViewModelStore()
         }
+
         val lifecycleOwner = MyLifecycleOwner()
 
         lifecycleOwner.performRestore(null)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-        composeView.setViewTreeLifecycleOwner(lifecycleOwner)
-        composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
-        composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+
+        view.setViewTreeLifecycleOwner(lifecycleOwner)
+        view.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
+        view.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+
 
         // This is required or otherwise the UI will not recompose
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_RESUME)
-
-        windowManager.addView(composeView, windowParams)
-
-
     }
+
+    private fun switchOverlay(destinationWindow: Window) {
+        when (destinationWindow) {
+            currentWindow -> {
+                Log.w("Overlay switcher", "Failed to switch: same window")
+                return
+            }
+
+            Window.BUTTON ->
+                windowManager.addView(composeView, windowParams)
+
+            Window.MESSENGER ->
+                windowManager.addView(msgComposeView, msgWindowParams)
+
+
+            else -> {
+                Log.w("Overlay switcher", "Failed to switch: invalid destination")
+                return
+            }
+        }
+
+        when (currentWindow) {
+            Window.BUTTON ->
+                windowManager.removeViewImmediate(composeView)
+
+            Window.MESSENGER ->
+                windowManager.removeViewImmediate(msgComposeView)
+
+            Window.NONE -> {}
+        }
+
+        currentWindow = destinationWindow
+    }
+
 
     override fun onBind(intent: Intent): IBinder? {
         return null
@@ -169,12 +229,7 @@ class OverlayService : Service() {
         }
     }
 
-    private var overlayOffset: Offset by mutableStateOf(
-        Offset(
-            windowParams.x.toFloat(),
-            windowParams.y.toFloat()
-        )
-    )
+    private var overlayOffset: Offset by mutableStateOf(Offset.Zero)
 
     @Composable
     fun OverlayDraggableContainer(
@@ -184,7 +239,7 @@ class OverlayService : Service() {
         modifier = modifier.pointerInput(Unit) {
             detectDragGestures { change, dragAmount ->
                 change.consume()
-                
+
                 // Update our current offset
                 val newOffset = Offset(
                     if (windowParams.gravity and Gravity.END == Gravity.END) {

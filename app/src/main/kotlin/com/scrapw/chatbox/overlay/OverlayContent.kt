@@ -27,7 +27,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ButtonOverlay(onExpand: () -> Unit) {
-    FloatingActionButton(onClick = { onExpand() }) {
+    FloatingActionButton(
+        onClick = { onExpand() }
+    ) {
         Icon(Icons.Default.Cake, null)
     }
 }
@@ -41,9 +43,7 @@ fun MessengerOverlay(onExpand: () -> Unit) {
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.pointerInput(Unit) {
             detectTapGestures(
-                onPress = {
-                    Log.d("Overlay gesture", "onPress()")
-                },
+                onPress = { Log.d("Overlay gesture", "onPress()") },
                 onDoubleTap = { Log.d("Overlay gesture", "onDoubleTap()") },
                 onLongPress = { Log.d("Overlay gesture", "onLongPress()") },
                 onTap = { Log.d("Overlay gesture", "onTap()") }
