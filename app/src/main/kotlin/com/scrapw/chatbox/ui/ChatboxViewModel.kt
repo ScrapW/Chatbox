@@ -1,5 +1,7 @@
 package com.scrapw.chatbox.ui
 
+import android.util.Log
+import androidx.annotation.MainThread
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -35,12 +37,28 @@ class ChatboxViewModel(
 ) : ViewModel() {
 
     companion object {
+        private lateinit var instance: ChatboxViewModel
+
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as ChatboxApplication)
-                ChatboxViewModel(application.userPreferencesRepository)
+                instance = ChatboxViewModel(application.userPreferencesRepository)
+                Log.d("ChatboxViewModel", "Init")
+                instance
             }
         }
+
+
+        // https://stackoverflow.com/a/61918988
+        @MainThread
+        fun getInstance(): ChatboxViewModel {
+            if (!::instance.isInitialized) {
+                throw Exception("ChatboxViewModel is not initialized!")
+            }
+            Log.d("ChatboxViewModel", "getInstance()")
+            return instance
+        }
+
     }
 
     val conversationUiState = ConversationUiState()

@@ -24,8 +24,8 @@ fun OverlayDaemon(context: Context) {
 private fun startOverlay(context: Context) {
     Log.d("Service", "Start")
 
-    context.startService(Intent(context, OverlayService::class.java))
-
+    val intent = Intent(context, OverlayService::class.java)
+    context.startService(intent)
 //    if (Settings.canDrawOverlays(context)) {
 //    } else {
 //        checkOverlayPermission(context)
@@ -34,7 +34,7 @@ private fun startOverlay(context: Context) {
 
 private fun stopOverlay(context: Context) {
     Log.d("Service", "STOP")
-    
+
     context.stopService(Intent(context, OverlayService::class.java))
 }
 

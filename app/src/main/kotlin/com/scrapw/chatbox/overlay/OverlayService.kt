@@ -27,6 +27,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.scrapw.chatbox.ui.ChatboxViewModel
 import kotlin.math.roundToInt
 
 // From comments of https://gist.github.com/handstandsam/6ecff2f39da72c0b38c07aa80bbb5a2f
@@ -36,10 +37,12 @@ import kotlin.math.roundToInt
 
 class OverlayService : Service() {
 
-    lateinit var composeView: ComposeView
-    lateinit var msgComposeView: ComposeView
+    private lateinit var buttonComposeView: ComposeView
+    private lateinit var msgComposeView: ComposeView
 
     private val lifecycleOwner = MyLifecycleOwner()
+
+    private val chatboxViewModel = ChatboxViewModel.getInstance()
 
     enum class Window {
         NONE,
@@ -47,46 +50,37 @@ class OverlayService : Service() {
         MESSENGER
     }
 
-    var currentWindow = Window.NONE
+    private var currentWindow = Window.NONE
 
     private val windowManager get() = getSystemService(WINDOW_SERVICE) as WindowManager
 
-    private var windowParams = WindowManager.LayoutParams().apply {
-        width = WindowManager.LayoutParams.WRAP_CONTENT
-        height = WindowManager.LayoutParams.WRAP_CONTENT
-        format = PixelFormat.TRANSLUCENT
-        type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        windowAnimations = android.R.style.Animation_Dialog
-        gravity = Gravity.START or Gravity.TOP
-        flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-                or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+    private val defaultOverlayParams
+        get() = WindowManager.LayoutParams().apply {
+            width = WindowManager.LayoutParams.WRAP_CONTENT
+            height = WindowManager.LayoutParams.WRAP_CONTENT
+            format = PixelFormat.TRANSLUCENT
+            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            windowAnimations = android.R.style.Animation_Dialog
+            gravity = Gravity.START or Gravity.TOP
+            flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                    or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)
+        }
+
+    private var buttonWindowParams = defaultOverlayParams
+    private var msgWindowParams = defaultOverlayParams.apply {
+        gravity = Gravity.CENTER_HORIZONTAL or Gravity.TOP
+        flags = flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
     }
 
-    private var msgWindowParams = WindowManager.LayoutParams().apply {
-        width = WindowManager.LayoutParams.WRAP_CONTENT
-        height = WindowManager.LayoutParams.WRAP_CONTENT
-        format = PixelFormat.TRANSLUCENT
-        type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        windowAnimations = android.R.style.Animation_Dialog
-        gravity = Gravity.START or Gravity.TOP
-        flags = (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
-                or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-                or WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH)
-    }
 
     override fun onCreate() {
         super.onCreate()
-        composeView = ComposeView(this)
+        buttonComposeView = ComposeView(this)
         msgComposeView = ComposeView(this)
 
-        val f = Rect().also { composeView.getWindowVisibleDisplayFrame(it) }
-        val w = f.width()
-        val h = f.height()
-
-        setInitPos(w, h)
-
+        setInitPos()
         initOverlay()
 
         switchOverlay(Window.BUTTON)
@@ -96,7 +90,7 @@ class OverlayService : Service() {
         super.onDestroy()
 
         if (currentWindow == Window.BUTTON) {
-            windowManager.removeViewImmediate(composeView)
+            windowManager.removeViewImmediate(buttonComposeView)
         } else if (currentWindow == Window.MESSENGER) {
             windowManager.removeViewImmediate(msgComposeView)
         }
@@ -104,12 +98,25 @@ class OverlayService : Service() {
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
     }
 
-    fun setInitPos(w: Int, h: Int) {
-        windowParams = windowParams.apply {
+    fun setInitPos() {
+        val f = Rect().also { buttonComposeView.getWindowVisibleDisplayFrame(it) }
+        val w = f.width()
+        val h = f.height()
+
+        buttonWindowParams.apply {
             x = w
             y = (h * 0.7).toInt()
         }
-        overlayOffset = Offset(x = windowParams.x.toFloat(), y = windowParams.y.toFloat())
+
+        overlayOffset = Offset(
+            x = buttonWindowParams.x.toFloat(), y = buttonWindowParams.y.toFloat()
+        )
+
+        msgWindowParams = msgWindowParams.apply {
+            x = 0
+//            y = 0
+            y = (h * 0.1).toInt()
+        }
     }
 
 
@@ -117,7 +124,7 @@ class OverlayService : Service() {
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initOverlay() {
-        composeView.setContent {
+        buttonComposeView.setContent {
             OverlayDraggableContainer {
                 ButtonOverlay {
                     switchOverlay(Window.MESSENGER)
@@ -126,7 +133,7 @@ class OverlayService : Service() {
         }
 
         msgComposeView.setContent {
-            MessengerOverlay {
+            MessengerOverlay(chatboxViewModel) {
                 switchOverlay(Window.BUTTON)
             }
         }
@@ -138,8 +145,6 @@ class OverlayService : Service() {
                 switchOverlay(Window.BUTTON)
 
                 Log.i("Touch Listener", "outside")
-            } else {
-                Log.i("Touch Listener", "inside")
             }
             true
         }
@@ -155,9 +160,9 @@ class OverlayService : Service() {
         lifecycleOwner.performRestore(null)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
 
-        composeView.setViewTreeLifecycleOwner(lifecycleOwner)
-        composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
-        composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+        buttonComposeView.setViewTreeLifecycleOwner(lifecycleOwner)
+        buttonComposeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
+        buttonComposeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
 
         msgComposeView.setViewTreeLifecycleOwner(lifecycleOwner)
         msgComposeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
@@ -171,7 +176,7 @@ class OverlayService : Service() {
     private fun switchOverlay(destinationWindow: Window) {
         when (currentWindow) {
             Window.BUTTON ->
-                windowManager.removeViewImmediate(composeView)
+                windowManager.removeViewImmediate(buttonComposeView)
 
             Window.MESSENGER ->
                 windowManager.removeViewImmediate(msgComposeView)
@@ -183,8 +188,8 @@ class OverlayService : Service() {
         // TODO: Why composeView.childCount won't clear after removeViewImmediate ?
         when (destinationWindow) {
             Window.BUTTON -> {
-                composeView.removeAllViews()
-                windowManager.addView(composeView, windowParams)
+                buttonComposeView.removeAllViews()
+                windowManager.addView(buttonComposeView, buttonWindowParams)
             }
 
             Window.MESSENGER -> {
@@ -216,12 +221,12 @@ class OverlayService : Service() {
 
                 // Update our current offset
                 val newOffset = Offset(
-                    if (windowParams.gravity and Gravity.END == Gravity.END) {
+                    if (buttonWindowParams.gravity and Gravity.END == Gravity.END) {
                         overlayOffset.x - dragAmount.x
                     } else {
                         overlayOffset.x + dragAmount.x
                     },
-                    if (windowParams.gravity and Gravity.BOTTOM == Gravity.BOTTOM) {
+                    if (buttonWindowParams.gravity and Gravity.BOTTOM == Gravity.BOTTOM) {
                         overlayOffset.y - dragAmount.y
                     } else {
                         overlayOffset.y + dragAmount.y
@@ -231,11 +236,11 @@ class OverlayService : Service() {
                 overlayOffset = newOffset
 
                 // Update the layout params, and then the view
-                windowParams.apply {
+                buttonWindowParams.apply {
                     x = overlayOffset.x.roundToInt()
                     y = overlayOffset.y.roundToInt()
                 }
-                windowManager.updateViewLayout(composeView, windowParams)
+                windowManager.updateViewLayout(buttonComposeView, buttonWindowParams)
             }
         },
         content = content

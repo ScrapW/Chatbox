@@ -1,6 +1,5 @@
 package com.scrapw.chatbox.ui.mainScreen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
@@ -37,7 +36,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MessageField(
     chatboxViewModel: ChatboxViewModel,
@@ -121,7 +119,7 @@ fun MessageField(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.Send,
-                contentDescription = "Send",
+                contentDescription = stringResource(R.string.send),
                 modifier = Modifier.size(24.dp)
             )
         }

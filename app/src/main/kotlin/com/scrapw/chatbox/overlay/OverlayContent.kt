@@ -1,12 +1,20 @@
 package com.scrapw.chatbox.overlay
 
-import android.util.Log
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cake
+import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.automirrored.outlined.Chat
+import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -15,59 +23,145 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.scrapw.chatbox.R
+import com.scrapw.chatbox.data.SettingsStates
+import com.scrapw.chatbox.ui.ChatboxViewModel
+import com.scrapw.chatbox.ui.common.HapticConstants
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun ButtonOverlay(onExpand: () -> Unit) {
+fun ButtonOverlay(expand: () -> Unit) {
     FloatingActionButton(
-        onClick = { onExpand() }
+        onClick = { expand() }
     ) {
-        Icon(Icons.Default.Cake, null)
+        Icon(Icons.AutoMirrored.Outlined.Chat, null)
     }
 }
 
 @Composable
-fun MessengerOverlay(onExpand: () -> Unit) {
-
+fun MessengerOverlay(chatboxViewModel: ChatboxViewModel, collapse: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
-        modifier = Modifier.pointerInput(Unit) {
-            detectTapGestures(
-                onPress = { Log.d("Overlay gesture", "onPress()") },
-                onDoubleTap = { Log.d("Overlay gesture", "onDoubleTap()") },
-                onLongPress = { Log.d("Overlay gesture", "onLongPress()") },
-                onTap = { Log.d("Overlay gesture", "onTap()") }
-            )
-        }
+        modifier = Modifier
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .padding(16.dp)
-                .wrapContentSize()
+                .height(72.dp)
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(text = "Hello from Compose")
-
-            var text by remember { mutableStateOf("Hello") }
-
             TextField(
-                value = text,
-                onValueChange = { text = it },
-                label = { Text("Label") },
-                modifier = Modifier.focusRequester(focusRequester)
+                value = chatboxViewModel.messageText.value,
+                onValueChange = {
+                    chatboxViewModel.onMessageTextChange(it)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .clip(RoundedCornerShape(8.dp))
+                    .focusRequester(focusRequester),
+                singleLine = true,
+                placeholder = { Text(stringResource(R.string.write_a_message)) },
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Send
+                ),
+                keyboardActions = KeyboardActions(
+                    onSend = {
+                        chatboxViewModel.sendMessage()
+                    }
+                )
             )
+
+            val view = LocalView.current
+            val buttonHapticState = SettingsStates.buttonHapticState()
+
+
+            val onSendClick = {
+                chatboxViewModel.sendMessage()
+                if (buttonHapticState.value) {
+                    view.performHapticFeedback(HapticConstants.send)
+                }
+            }
+
+            val onSendLongClick = {
+                chatboxViewModel.stashMessage()
+                if (buttonHapticState.value) {
+                    view.performHapticFeedback(HapticConstants.send)
+                }
+            }
+
+
+            val interactionSource = remember { MutableInteractionSource() }
+            val viewConfiguration = LocalViewConfiguration.current
+
+            LaunchedEffect(interactionSource) {
+                var isLongClick = false
+
+                interactionSource.interactions.collectLatest { interaction ->
+                    when (interaction) {
+                        is PressInteraction.Press -> {
+                            isLongClick = false
+                            delay(viewConfiguration.longPressTimeoutMillis)
+                            isLongClick = true
+                            onSendLongClick()
+                        }
+
+                        is PressInteraction.Release -> {
+                            if (!isLongClick) {
+                                onSendClick()
+                            }
+                        }
+                    }
+                }
+            }
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxHeight(),
+                interactionSource = interactionSource
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Default.Send,
+                    contentDescription = stringResource(R.string.send),
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
     }
+
+//    Column(
+//        modifier = Modifier
+//            .padding(16.dp)
+//            .wrapContentSize()
+//    ) {
+//        Text(text = "Hello from Compose")
+//
+//        var text by remember { mutableStateOf("Hello") }
+//
+//        TextField(
+//            value = text,
+//            onValueChange = { text = it },
+//            label = { Text("Label") },
+//            modifier = Modifier.focusRequester(focusRequester)
+//        )
+//    }
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 }
+
