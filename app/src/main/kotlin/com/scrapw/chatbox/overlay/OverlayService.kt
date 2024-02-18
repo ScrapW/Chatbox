@@ -3,6 +3,7 @@ package com.scrapw.chatbox.overlay
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Intent
+import android.content.res.Configuration
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.os.IBinder
@@ -14,6 +15,7 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -43,6 +46,9 @@ class OverlayService : Service() {
     private val lifecycleOwner = MyLifecycleOwner()
 
     private val chatboxViewModel = ChatboxViewModel.getInstance()
+
+    private val buttonDefaultPos = Offset(1f, 0.7f)
+    private val msgDefaultPos = Offset(0f, 0.1f)
 
     enum class Window {
         NONE,
@@ -80,7 +86,9 @@ class OverlayService : Service() {
         buttonComposeView = ComposeView(this)
         msgComposeView = ComposeView(this)
 
-        setInitPos()
+        orientation.value = resources.configuration.orientation
+
+        onOrientationChange()
         initOverlay()
 
         switchOverlay(Window.BUTTON)
@@ -98,30 +106,6 @@ class OverlayService : Service() {
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
     }
 
-    fun setInitPos() {
-        val f = Rect().also { buttonComposeView.getWindowVisibleDisplayFrame(it) }
-        val w = f.width()
-        val h = f.height()
-
-        buttonWindowParams.apply {
-            x = w
-            y = (h * 0.7).toInt()
-        }
-
-        overlayOffset = Offset(
-            x = buttonWindowParams.x.toFloat(), y = buttonWindowParams.y.toFloat()
-        )
-
-        msgWindowParams = msgWindowParams.apply {
-            x = 0
-//            y = 0
-            y = (h * 0.1).toInt()
-        }
-    }
-
-
-//    val expanded = mutableStateOf(false)
-
     @SuppressLint("ClickableViewAccessibility")
     private fun initOverlay() {
         buttonComposeView.setContent {
@@ -130,28 +114,37 @@ class OverlayService : Service() {
                     switchOverlay(Window.MESSENGER)
                 }
             }
+
+            val configuration = LocalConfiguration.current
+
+            // https://stackoverflow.com/a/67612872
+            LaunchedEffect(configuration) {
+                orientation.value = configuration.orientation
+                onOrientationChange()
+            }
         }
 
         msgComposeView.setContent {
             MessengerOverlay(chatboxViewModel) {
                 switchOverlay(Window.BUTTON)
             }
+
+            val configuration = LocalConfiguration.current
+
+            LaunchedEffect(configuration) {
+                orientation.value = configuration.orientation
+                onOrientationChange()
+            }
         }
 
         msgComposeView.setOnTouchListener { _, event ->
-            Log.d("action", event.toString())
             if (event.action == MotionEvent.ACTION_OUTSIDE) {
-
                 switchOverlay(Window.BUTTON)
-
-                Log.i("Touch Listener", "outside")
             }
             true
         }
 
         // Trick The ComposeView into thinking we are tracking lifecycle
-
-
         val viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
                 get() = ViewModelStore()
@@ -203,9 +196,101 @@ class OverlayService : Service() {
         currentWindow = destinationWindow
     }
 
+    private fun update() {
+        try {
+            if (currentWindow == Window.BUTTON) {
+                windowManager.updateViewLayout(buttonComposeView, buttonWindowParams)
+            } else if (currentWindow == Window.MESSENGER) {
+                windowManager.updateViewLayout(msgComposeView, msgWindowParams)
+            }
+        } catch (e: Exception) {
+            // Ignore exception for now, but in production, you should have some
+            // warning for the user here.
+        }
+    }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
+    var orientation = mutableStateOf(Configuration.ORIENTATION_PORTRAIT)
+
+    private fun isPortrait(): Boolean {
+        return orientation.value != Configuration.ORIENTATION_LANDSCAPE
+    }
+
+    var buttonPortraitPos: Offset? = null
+    var buttonLandscapePos: Offset? = null
+
+    var msgPortraitPos: Offset? = null
+    var msgLandscapePos: Offset? = null
+    
+    private fun onOrientationChange() {
+        //TODO: Shorter
+
+        val f = Rect().also { buttonComposeView.getWindowVisibleDisplayFrame(it) }
+
+        Log.d("isPortrait()", isPortrait().toString())
+        Log.d("width()", f.width().toString())
+        Log.d("height()", f.height().toString())
+
+
+        if (isPortrait()) {
+            if (buttonPortraitPos == null) {
+                val f = Rect().also { buttonComposeView.getWindowVisibleDisplayFrame(it) }
+                buttonPortraitPos = Offset(
+                    x = f.width() * buttonDefaultPos.x,
+                    y = f.height() * buttonDefaultPos.y,
+                )
+            }
+
+            buttonWindowParams.apply {
+                x = buttonPortraitPos!!.x.toInt()
+                y = buttonPortraitPos!!.y.toInt()
+            }
+
+            overlayOffset = buttonPortraitPos as Offset
+
+            if (msgPortraitPos == null) {
+                val f = Rect().also { msgComposeView.getWindowVisibleDisplayFrame(it) }
+                msgPortraitPos = Offset(
+                    x = f.width() * msgDefaultPos.x,
+                    y = f.height() * msgDefaultPos.y,
+                )
+            }
+
+            msgWindowParams.apply {
+                x = msgPortraitPos!!.x.toInt()
+                y = msgPortraitPos!!.y.toInt()
+            }
+
+        } else {
+            if (buttonLandscapePos == null) {
+                val f = Rect().also { buttonComposeView.getWindowVisibleDisplayFrame(it) }
+                buttonLandscapePos = Offset(
+                    x = f.width() * buttonDefaultPos.x,
+                    y = f.height() * buttonDefaultPos.y,
+                )
+            }
+
+            buttonWindowParams.apply {
+                x = buttonLandscapePos!!.x.toInt()
+                y = buttonLandscapePos!!.y.toInt()
+            }
+
+            overlayOffset = buttonLandscapePos as Offset
+
+
+            if (msgLandscapePos == null) {
+                val f = Rect().also { msgComposeView.getWindowVisibleDisplayFrame(it) }
+                msgLandscapePos = Offset(
+                    x = f.width() * msgDefaultPos.x,
+                    y = f.height() * msgDefaultPos.y,
+                )
+            }
+
+            msgWindowParams.apply {
+                x = msgLandscapePos!!.x.toInt()
+                y = msgLandscapePos!!.y.toInt()
+            }
+        }
+        update()
     }
 
     private var overlayOffset: Offset by mutableStateOf(Offset.Zero)
@@ -240,9 +325,20 @@ class OverlayService : Service() {
                     x = overlayOffset.x.roundToInt()
                     y = overlayOffset.y.roundToInt()
                 }
+
+                if (isPortrait()) {
+                    buttonPortraitPos = overlayOffset
+                } else {
+                    buttonLandscapePos = overlayOffset
+                }
+
                 windowManager.updateViewLayout(buttonComposeView, buttonWindowParams)
             }
         },
         content = content
     )
+
+    override fun onBind(intent: Intent): IBinder? {
+        return null
+    }
 }
