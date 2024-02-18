@@ -32,10 +32,14 @@ import kotlin.math.roundToInt
 // From comments of https://gist.github.com/handstandsam/6ecff2f39da72c0b38c07aa80bbb5a2f
 // https://www.jetpackcompose.app/snippets/OverlayService
 
+// TODO: https://gist.github.com/handstandsam/6ecff2f39da72c0b38c07aa80bbb5a2f?permalink_comment_id=4216617#gistcomment-4216617
+
 class OverlayService : Service() {
 
     lateinit var composeView: ComposeView
     lateinit var msgComposeView: ComposeView
+
+    private val lifecycleOwner = MyLifecycleOwner()
 
     enum class Window {
         NONE,
@@ -91,10 +95,12 @@ class OverlayService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        windowManager.removeViewImmediate(composeView)
-        windowManager.removeViewImmediate(msgComposeView)
+        if (currentWindow == Window.BUTTON) {
+            windowManager.removeViewImmediate(composeView)
+        } else if (currentWindow == Window.MESSENGER) {
+            windowManager.removeViewImmediate(msgComposeView)
+        }
 
-        val lifecycleOwner = MyLifecycleOwner()
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_STOP)
     }
 
@@ -112,7 +118,6 @@ class OverlayService : Service() {
     @SuppressLint("ClickableViewAccessibility")
     private fun initOverlay() {
         composeView.setContent {
-
             OverlayDraggableContainer {
                 ButtonOverlay {
                     switchOverlay(Window.MESSENGER)
@@ -141,25 +146,22 @@ class OverlayService : Service() {
 
         // Trick The ComposeView into thinking we are tracking lifecycle
 
-        registerLifecycle(composeView)
-        registerLifecycle(msgComposeView)
-    }
 
-    private fun registerLifecycle(view: ComposeView) {
         val viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
                 get() = ViewModelStore()
         }
 
-        val lifecycleOwner = MyLifecycleOwner()
-
         lifecycleOwner.performRestore(null)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
 
-        view.setViewTreeLifecycleOwner(lifecycleOwner)
-        view.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
-        view.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
+        composeView.setViewTreeLifecycleOwner(lifecycleOwner)
+        composeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
+        composeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
 
+        msgComposeView.setViewTreeLifecycleOwner(lifecycleOwner)
+        msgComposeView.setViewTreeViewModelStoreOwner(viewModelStoreOwner)
+        msgComposeView.setViewTreeSavedStateRegistryOwner(lifecycleOwner)
 
         // This is required or otherwise the UI will not recompose
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
@@ -167,25 +169,6 @@ class OverlayService : Service() {
     }
 
     private fun switchOverlay(destinationWindow: Window) {
-        when (destinationWindow) {
-            currentWindow -> {
-                Log.w("Overlay switcher", "Failed to switch: same window")
-                return
-            }
-
-            Window.BUTTON ->
-                windowManager.addView(composeView, windowParams)
-
-            Window.MESSENGER ->
-                windowManager.addView(msgComposeView, msgWindowParams)
-
-
-            else -> {
-                Log.w("Overlay switcher", "Failed to switch: invalid destination")
-                return
-            }
-        }
-
         when (currentWindow) {
             Window.BUTTON ->
                 windowManager.removeViewImmediate(composeView)
@@ -196,37 +179,28 @@ class OverlayService : Service() {
             Window.NONE -> {}
         }
 
+        // TODO: Why have to removeAllViews() for composeView ???
+        // TODO: Why composeView.childCount won't clear after removeViewImmediate ?
+        when (destinationWindow) {
+            Window.BUTTON -> {
+                composeView.removeAllViews()
+                windowManager.addView(composeView, windowParams)
+            }
+
+            Window.MESSENGER -> {
+                msgComposeView.removeAllViews()
+                windowManager.addView(msgComposeView, msgWindowParams)
+            }
+
+            Window.NONE -> {}
+        }
+
         currentWindow = destinationWindow
     }
 
 
     override fun onBind(intent: Intent): IBinder? {
         return null
-    }
-
-    private fun enableKeyboard() {
-        if (windowParams.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE != 0) {
-            windowParams.flags =
-                windowParams.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE.inv()
-            update()
-        }
-    }
-
-    private fun disableKeyboard() {
-        if (windowParams.flags and WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE == 0) {
-            windowParams.flags =
-                windowParams.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-            update()
-        }
-    }
-
-    private fun update() {
-        try {
-            windowManager.updateViewLayout(composeView, windowParams)
-        } catch (e: Exception) {
-            // Ignore exception for now, but in production, you should have some
-            // warning for the user here.
-        }
     }
 
     private var overlayOffset: Offset by mutableStateOf(Offset.Zero)
