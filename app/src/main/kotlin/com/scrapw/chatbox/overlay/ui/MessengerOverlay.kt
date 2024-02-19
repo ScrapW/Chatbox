@@ -20,7 +20,7 @@ fun MessengerOverlay(chatboxViewModel: ChatboxViewModel, collapse: () -> Unit) {
         modifier = Modifier.clip(RoundedCornerShape(4.dp))
     ) {
         Column {
-            MessengerMessageField(chatboxViewModel)
+            MessengerMessageField(chatboxViewModel, collapse)
             MessengerConversation(
                 uiState = chatboxViewModel.conversationUiState,
                 onCopyPressed = chatboxViewModel::onMessageTextChange,

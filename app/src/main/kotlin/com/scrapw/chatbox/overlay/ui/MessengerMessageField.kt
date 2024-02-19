@@ -24,6 +24,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.stringResource
@@ -37,7 +40,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel) {
+internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
     Row(
@@ -55,7 +58,13 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel) {
             modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .onKeyEvent { event ->
+                    if (event.key == Key.Back) {
+                        collapse()
+                    }
+                    true
+                },
             singleLine = true,
             placeholder = { Text(stringResource(R.string.write_a_message)) },
             keyboardOptions = KeyboardOptions(
