@@ -1,20 +1,30 @@
 package com.scrapw.chatbox.overlay.ui
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material3.ElevatedButton
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -22,6 +32,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.Key
@@ -43,13 +55,53 @@ import kotlinx.coroutines.flow.collectLatest
 internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse: () -> Unit) {
     val focusRequester = remember { FocusRequester() }
 
+    val keepOpenState = SettingsStates.overlayKeepOpen()
+
+    val onSend = {
+        chatboxViewModel.sendMessage()
+        if (!keepOpenState.value) {
+            collapse()
+        }
+    }
+
+    val onStash = {
+        chatboxViewModel.stashMessage()
+        if (!keepOpenState.value) {
+            collapse()
+        }
+    }
+
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
             .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(2.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .clip(CircleShape)
+                .clickable {
+                    keepOpenState.value = !keepOpenState.value
+                },
+        ) {
+            Crossfade(
+                targetState = keepOpenState.value,
+                animationSpec = tween(500), label = "OverlayLockCrossfade"
+            ) { locked ->
+                val icon = if (locked) Icons.Default.Lock else Icons.Default.LockOpen
+                val contentDescription =
+                    if (locked) stringResource(R.string.overlay_locked)
+                    else stringResource(R.string.overlay_unlocked)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = contentDescription,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(4.dp)
+                )
+            }
+        }
+
         TextField(
             value = chatboxViewModel.messageText.value,
             onValueChange = {
@@ -57,7 +109,6 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
             },
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight()
                 .focusRequester(focusRequester)
                 .onKeyEvent { event ->
                     if (event.key == Key.Back) {
@@ -72,16 +123,20 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
             ),
             keyboardActions = KeyboardActions(
                 onSend = {
-                    chatboxViewModel.sendMessage()
+                    onSend()
                 }
             )
         )
 
         val interactionSource = remember { MutableInteractionSource() }
 
-        ElevatedButton(
+        Button(
             onClick = {},
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxHeight()
+                .scale(0.9f),
+            contentPadding = PaddingValues(0.dp),
+            shape = RoundedCornerShape(16.dp),
             interactionSource = interactionSource
         ) {
             Icon(
@@ -95,14 +150,14 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
         val view = LocalView.current
 
         val onSendClick = {
-            chatboxViewModel.sendMessage()
+            onSend()
             if (buttonHapticState.value) {
                 view.performHapticFeedback(HapticConstants.send)
             }
         }
 
         val onSendLongClick = {
-            chatboxViewModel.stashMessage()
+            onStash()
             if (buttonHapticState.value) {
                 view.performHapticFeedback(HapticConstants.send)
             }

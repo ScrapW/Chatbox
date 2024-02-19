@@ -26,12 +26,21 @@ object SettingsStates {
             dataStore = LocalContext.current.dataStore
         )
     }
-    
+
     @Composable
     fun overlayState(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
             key = "overlay",
             defaultValue = false,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
+    fun overlayKeepOpen(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "overlay_keep_open",
+            defaultValue = true,
             dataStore = LocalContext.current.dataStore
         )
     }

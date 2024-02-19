@@ -7,10 +7,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LiveHelp
 import androidx.compose.material.icons.automirrored.filled.Send
-import androidx.compose.material.icons.filled.Cake
 import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
@@ -64,12 +64,21 @@ fun SettingsScreen(
             )
         }
 
-        SettingsSubGroup("Floating window") {
+        SettingsSubGroup("Floating button") {
             SettingsSwitch(
                 state = SettingsStates.overlayState(),
-                icon = Icons.Default.Cake,
-                title = "com.scrapw.chatbox.overlay.Overlay",
-                subtitle = ""
+                icon = Icons.Default.Layers,
+                title = "Enable chatbox floating button",
+                subtitle = "It can help to send Chatbox in VRChat Mobile."
+            )
+
+
+            SettingsSwitch(
+                state = SettingsStates.overlayKeepOpen(),
+                icon = Icons.Default.Lock,
+                title = "Keep conversation overlay open",
+                subtitle = "Overlay does not close after sending a message.",
+                enabled = SettingsStates.overlayState().value
             )
         }
 
@@ -122,12 +131,12 @@ fun SettingsScreen(
         // [Accessibility]
         SettingsSubGroup(stringResource(R.string.accessibility)) {
             // Fullscreen
-            SettingsSwitch(
-                state = SettingsStates.fullscreenState(),
-                icon = Icons.Default.Fullscreen,
-                title = stringResource(R.string.fullscreen),
-                subtitle = stringResource(R.string.fullscreen_desc)
-            )
+//            SettingsSwitch(
+//                state = SettingsStates.fullscreenState(),
+//                icon = Icons.Default.Fullscreen,
+//                title = stringResource(R.string.fullscreen),
+//                subtitle = stringResource(R.string.fullscreen_desc)
+//            )
 
 //            // Always show keyboard
 //            SettingsSwitch(

@@ -47,4 +47,6 @@
     <string name="send">Send</string>
     <string name="open_chatbox">Open chatbox</string>
     <string name="overlay_permission_request">Please allow Chatbox display over other apps.</string>
+    <string name="overlay_locked">Locked</string>
+    <string name="overlay_unlocked">Unlocked</string>
 </resources>
