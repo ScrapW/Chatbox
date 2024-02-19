@@ -102,6 +102,7 @@ internal fun SettingsPreview() {
             )
 
             SettingsTextFieldInt(
+                defaultStateValue = -1,
                 title = { Text("SettingsTextFieldInt") }
             )
 

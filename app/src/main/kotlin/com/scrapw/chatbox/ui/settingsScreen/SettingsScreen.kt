@@ -56,6 +56,7 @@ fun SettingsScreen(
             val portState = SettingsStates.port()
             SettingsTextFieldInt(
                 state = portState,
+                defaultStateValue = 9000,
                 title = stringResource(R.string.port),
                 onSubmit = {
                     chatboxViewModel.portApply(portState.value)

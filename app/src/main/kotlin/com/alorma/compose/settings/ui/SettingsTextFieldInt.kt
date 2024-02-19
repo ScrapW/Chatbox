@@ -20,7 +20,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,7 +30,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import com.alorma.compose.settings.storage.base.SettingValueState
 import com.alorma.compose.settings.storage.base.rememberIntSettingState
 
@@ -41,6 +39,7 @@ fun SettingsTextFieldInt(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     state: SettingValueState<Int> = rememberIntSettingState(),
+    defaultStateValue: Int,
     title: String,
     icon: ImageVector? = null,
     useValueAsSubtitle: Boolean = true,
@@ -54,6 +53,7 @@ fun SettingsTextFieldInt(
         modifier = modifier,
         enabled = enabled,
         state = state,
+        defaultStateValue = defaultStateValue,
         icon = icon?.let {
             {
                 Icon(
@@ -82,6 +82,7 @@ fun SettingsTextFieldInt(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     state: SettingValueState<Int> = rememberIntSettingState(),
+    defaultStateValue: Int,
     title: @Composable () -> Unit,
     icon: (@Composable () -> Unit)? = null,
     useValueAsSubtitle: Boolean = true,
@@ -113,11 +114,15 @@ fun SettingsTextFieldInt(
     if (!showDialog) return
 
     val scrollState = rememberScrollState()
-    var inputState by remember { mutableIntStateOf(state.value) }
+    var inputState by remember { mutableStateOf(state.value.toString()) }
     val focusRequester = remember { FocusRequester() }
 
     val submit: () -> Unit = {
-        state.value = inputState
+        try {
+            state.value = inputState.toInt()
+        } catch (e: Exception) {
+            state.value = defaultStateValue
+        }
         showDialog = false
         onSubmit?.invoke(state.value)
     }
@@ -136,10 +141,14 @@ fun SettingsTextFieldInt(
                     Spacer(modifier = Modifier.size(8.dp))
                 }
                 TextField(
-                    value = inputState.toString(),
+                    value = inputState,
                     onValueChange = {
-                        if (it.isDigitsOnly()) inputState = it.toInt()
-                        onValueChanged?.invoke(inputState)
+                        inputState = it
+                        try {
+                            onValueChanged?.invoke(inputState.toInt())
+                        } catch (e: Exception) {
+                            // Failed toInt(), do nothing.
+                        }
                     },
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -188,6 +197,7 @@ fun SettingsTextFieldInt(
 internal fun SettingsTextFieldIntPreview() {
     MaterialTheme {
         SettingsTextFieldInt(
+            defaultStateValue = -1,
             icon = { Icon(imageVector = Icons.Default.Clear, contentDescription = "Clear") },
             title = { Text("SettingsTextFieldInt") }
         )
