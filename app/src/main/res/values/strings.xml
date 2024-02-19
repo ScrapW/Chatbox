@@ -46,4 +46,5 @@
     <string name="message_card_restore">Restore this message to message field</string>
     <string name="send">Send</string>
     <string name="open_chatbox">Open chatbox</string>
+    <string name="overlay_permission_request">Please allow Chatbox display over other apps.</string>
 </resources>

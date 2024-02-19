@@ -5,40 +5,66 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.res.stringResource
+import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 
 @Composable
 fun OverlayDaemon(context: Context) {
-    val state = SettingsStates.floatingWindowState()
+    val state = SettingsStates.overlayState()
 
     if (state.value) {
-        startOverlay(context)
+        StartOverlay(context)
     } else {
-        stopOverlay(context)
+        StopOverlay(context)
     }
-
 }
 
+@Composable
+private fun StartOverlay(context: Context) {
+    Log.d("Service", "startOverlay")
 
-private fun startOverlay(context: Context) {
-    Log.d("Service", "Start")
+    val state = SettingsStates.overlayState()
 
-    val intent = Intent(context, OverlayService::class.java)
-    context.startService(intent)
-//    if (Settings.canDrawOverlays(context)) {
-//    } else {
-//        checkOverlayPermission(context)
-//    }
+    val startForResult =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { _ ->
+//            if (result.resultCode == Activity.RESULT_OK) {
+            if (Settings.canDrawOverlays(context)) {
+                Log.d("Overlay Permission", "Permission granted")
+                context.startService(Intent(context, OverlayService::class.java))
+            } else {
+                Log.d("Overlay Permission", "Permission denied")
+                state.value = false
+            }
+        }
+
+    if (Settings.canDrawOverlays(context)) {
+        context.startService(Intent(context, OverlayService::class.java))
+    } else {
+        Log.d("Service", "Can't draw Overlays!")
+        CheckOverlayPermission(context, startForResult)
+    }
 }
 
-private fun stopOverlay(context: Context) {
-    Log.d("Service", "STOP")
+@Composable
+private fun StopOverlay(context: Context) {
+    Log.d("Service", "stopOverlay")
 
     context.stopService(Intent(context, OverlayService::class.java))
 }
 
-private fun checkOverlayPermission(context: Context) {
+@Composable
+private fun CheckOverlayPermission(
+    context: Context,
+    result: ManagedActivityResultLauncher<Intent, ActivityResult>
+) {
 
     val CODE_DRAW_OVER_OTHER_APP_PERMISSION = 2084
 
@@ -50,9 +76,18 @@ private fun checkOverlayPermission(context: Context) {
             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
             Uri.parse("package:$context.packageName")
         )
-//        startActivityForResult(
-//            intent,
-//            CODE_DRAW_OVER_OTHER_APP_PERMISSION
-//        )
+
+        val toast = Toast.makeText(
+            context,
+            stringResource(R.string.overlay_permission_request),
+            Toast.LENGTH_LONG
+        )
+
+        LaunchedEffect(Unit) {
+            toast.show()
+            result.launch(intent)
+        }
+
+
     }
 }

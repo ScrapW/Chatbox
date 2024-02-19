@@ -66,7 +66,7 @@ fun SettingsScreen(
 
         SettingsSubGroup("Floating window") {
             SettingsSwitch(
-                state = SettingsStates.floatingWindowState(),
+                state = SettingsStates.overlayState(),
                 icon = Icons.Default.Cake,
                 title = "com.scrapw.chatbox.overlay.Overlay",
                 subtitle = ""

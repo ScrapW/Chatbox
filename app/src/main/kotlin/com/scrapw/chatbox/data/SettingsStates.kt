@@ -28,9 +28,9 @@ object SettingsStates {
     }
     
     @Composable
-    fun floatingWindowState(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+    fun overlayState(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
-            key = "floating_window",
+            key = "overlay",
             defaultValue = false,
             dataStore = LocalContext.current.dataStore
         )
