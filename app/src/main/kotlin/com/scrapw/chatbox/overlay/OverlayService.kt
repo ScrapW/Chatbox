@@ -187,12 +187,16 @@ class OverlayService : Service() {
     }
 
     private fun switchOverlay(destinationWindow: Window) {
+
+        // If removeViewImmediately and overlay is set to close after send, issue occurred:
+        // chatboxViewModel.messageText is cleared, but other compositions say it's not. ???
+
         when (currentWindow) {
             Window.BUTTON ->
-                windowManager.removeViewImmediate(buttonComposeView)
+                windowManager.removeView(buttonComposeView)
 
             Window.MESSENGER ->
-                windowManager.removeViewImmediate(msgComposeView)
+                windowManager.removeView(msgComposeView)
 
             Window.NONE -> {}
         }
@@ -235,11 +239,11 @@ class OverlayService : Service() {
         return orientation.value != Configuration.ORIENTATION_LANDSCAPE
     }
 
-    var buttonPortraitPos: Offset? = null
-    var buttonLandscapePos: Offset? = null
+    private var buttonPortraitPos: Offset? = null
+    private var buttonLandscapePos: Offset? = null
 
-    var msgPortraitPos: Offset? = null
-    var msgLandscapePos: Offset? = null
+    private var msgPortraitPos: Offset? = null
+    private var msgLandscapePos: Offset? = null
 
     private fun onOrientationChange() {
         //TODO: Shorter

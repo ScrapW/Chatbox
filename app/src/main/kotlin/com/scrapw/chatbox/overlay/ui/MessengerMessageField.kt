@@ -152,17 +152,17 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
         val view = LocalView.current
 
         val onSendClick = {
-            onSend()
             if (buttonHapticState.value) {
                 view.performHapticFeedback(HapticConstants.send)
             }
+            onSend()
         }
 
         val onSendLongClick = {
-            onStash()
             if (buttonHapticState.value) {
                 view.performHapticFeedback(HapticConstants.send)
             }
+            onStash()
         }
 
         val viewConfiguration = LocalViewConfiguration.current
