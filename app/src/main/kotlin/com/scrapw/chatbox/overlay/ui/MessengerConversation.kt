@@ -1,4 +1,4 @@
-package com.scrapw.chatbox.ui.mainScreen
+package com.scrapw.chatbox.overlay.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -27,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.common.HapticConstants
+import com.scrapw.chatbox.ui.mainScreen.ConversationUiState
+import com.scrapw.chatbox.ui.mainScreen.Message
 import com.scrapw.chatbox.ui.theme.ChatboxTheme
 import java.time.Instant
 import java.time.ZoneId
@@ -104,6 +106,11 @@ private fun CopyButton(message: Message, onCopyPressed: (TextFieldValue) -> Unit
 @Composable
 private fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
     Card(
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                14.dp
+            )
+        ),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp)
@@ -140,16 +147,15 @@ private fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Uni
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                MessageTime(message.timestamp, Modifier.align(Alignment.Bottom))
-                Spacer(modifier = Modifier.weight(1f))
                 if (message.stashed) {
                     StashedTag(Modifier.align(Alignment.Bottom))
-                    Spacer(Modifier.width(12.dp))
                 }
-                CopyButton(message, onCopyPressed)
+                Spacer(modifier = Modifier.weight(1f))
+                MessageTime(message.timestamp, Modifier.align(Alignment.Bottom))
             }
         }
     }
+
 }
 
 @Composable
@@ -161,7 +167,7 @@ private fun ConversationList(
     val lazyListState = rememberLazyListState()
     LazyColumn(
         modifier = modifier,
-        reverseLayout = true,
+        reverseLayout = false,
         state = lazyListState
     ) {
         items(uiState.messages) { message ->
@@ -172,7 +178,7 @@ private fun ConversationList(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun EmptyConversationList(modifier: Modifier = Modifier) {
+private fun EmptyConversationList(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxSize(),
 
@@ -183,19 +189,19 @@ fun EmptyConversationList(modifier: Modifier = Modifier) {
             imageVector = Icons.Rounded.History,
             contentDescription = null,
             modifier = Modifier.size(140.dp),
-            tint = MaterialTheme.colorScheme.primaryContainer
+            tint = MaterialTheme.colorScheme.surfaceTint
         )
         Text(
             text = stringResource(R.string.empty_conversation),
             style = MaterialTheme.typography.titleLarge,
             fontStyle = FontStyle.Italic,
-            color = MaterialTheme.colorScheme.primaryContainer
+            color = MaterialTheme.colorScheme.surfaceTint
         )
     }
 }
 
 @Composable
-fun Conversation(
+internal fun MessengerConversation(
     uiState: ConversationUiState,
     onCopyPressed: (TextFieldValue) -> Unit,
     modifier: Modifier = Modifier
@@ -207,7 +213,7 @@ fun Conversation(
     Box(modifier) {
         Crossfade(
             targetState = uiState.messages.isEmpty(),
-            animationSpec = tween(500), label = "MainScreenConversationCrossfade"
+            animationSpec = tween(500), label = "OverlayConversationCrossfade"
         ) { conversationEmpty ->
             if (conversationEmpty) {
                 EmptyConversationList(Modifier.fillMaxSize())
@@ -227,9 +233,10 @@ fun Conversation(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun ConversationListPreview() {
+fun MessengerConversationPreview() {
     val messageList = listOf<Message>(
         Message(content = "Hello ███", timestamp = Instant.now()),
         Message(content = "你好~"),
@@ -238,7 +245,7 @@ fun ConversationListPreview() {
         Message(content = "Line1\nLine2")
     )
     ChatboxTheme {
-        ConversationList(
+        MessengerConversation(
             ConversationUiState(
                 initialMessages = messageList.reversed()
             ),

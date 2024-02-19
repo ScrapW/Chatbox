@@ -30,7 +30,10 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.scrapw.chatbox.overlay.ui.ButtonOverlay
+import com.scrapw.chatbox.overlay.ui.MessengerOverlay
 import com.scrapw.chatbox.ui.ChatboxViewModel
+import com.scrapw.chatbox.ui.theme.OverlayTheme
 import kotlin.math.roundToInt
 
 // From comments of https://gist.github.com/handstandsam/6ecff2f39da72c0b38c07aa80bbb5a2f
@@ -109,31 +112,35 @@ class OverlayService : Service() {
     @SuppressLint("ClickableViewAccessibility")
     private fun initOverlay() {
         buttonComposeView.setContent {
-            OverlayDraggableContainer {
-                ButtonOverlay {
-                    switchOverlay(Window.MESSENGER)
+            OverlayTheme {
+                OverlayDraggableContainer {
+                    ButtonOverlay {
+                        switchOverlay(Window.MESSENGER)
+                    }
                 }
-            }
 
-            val configuration = LocalConfiguration.current
+                val configuration = LocalConfiguration.current
 
-            // https://stackoverflow.com/a/67612872
-            LaunchedEffect(configuration) {
-                orientation.value = configuration.orientation
-                onOrientationChange()
+                // https://stackoverflow.com/a/67612872
+                LaunchedEffect(configuration) {
+                    orientation.value = configuration.orientation
+                    onOrientationChange()
+                }
             }
         }
 
         msgComposeView.setContent {
-            MessengerOverlay(chatboxViewModel) {
-                switchOverlay(Window.BUTTON)
-            }
+            OverlayTheme {
+                MessengerOverlay(chatboxViewModel) {
+                    switchOverlay(Window.BUTTON)
+                }
 
-            val configuration = LocalConfiguration.current
+                val configuration = LocalConfiguration.current
 
-            LaunchedEffect(configuration) {
-                orientation.value = configuration.orientation
-                onOrientationChange()
+                LaunchedEffect(configuration) {
+                    orientation.value = configuration.orientation
+                    onOrientationChange()
+                }
             }
         }
 
@@ -220,7 +227,7 @@ class OverlayService : Service() {
 
     var msgPortraitPos: Offset? = null
     var msgLandscapePos: Offset? = null
-    
+
     private fun onOrientationChange() {
         //TODO: Shorter
 
