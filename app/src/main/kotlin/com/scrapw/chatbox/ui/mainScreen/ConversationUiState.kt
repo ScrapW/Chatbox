@@ -12,7 +12,7 @@ class ConversationUiState(
 
     fun addMessage(msg: Message) {
         if (msg.content.isEmpty()) return
-        _messages.add(0, msg)
+        _messages.add(0, msg.copy(no = messages.size))
     }
 }
 
@@ -20,5 +20,6 @@ class ConversationUiState(
 data class Message(
     val content: String,
     val stashed: Boolean = false,
-    val timestamp: Instant? = null
+    val timestamp: Instant? = null,
+    val no: Int = -1
 )

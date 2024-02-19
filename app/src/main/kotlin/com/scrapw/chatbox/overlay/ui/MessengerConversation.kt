@@ -2,6 +2,7 @@ package com.scrapw.chatbox.overlay.ui
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -104,14 +105,18 @@ private fun CopyButton(message: Message, onCopyPressed: (TextFieldValue) -> Unit
 }
 
 @Composable
-private fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
+private fun MessageCard(
+    message: Message,
+    onCopyPressed: (TextFieldValue) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
                 14.dp
             )
         ),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp)
             .clip(CardDefaults.shape)
@@ -158,6 +163,7 @@ private fun MessageCard(message: Message, onCopyPressed: (TextFieldValue) -> Uni
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ConversationList(
     uiState: ConversationUiState,
@@ -170,8 +176,16 @@ private fun ConversationList(
         reverseLayout = false,
         state = lazyListState
     ) {
-        items(uiState.messages) { message ->
-            MessageCard(message, onCopyPressed)
+        item(key = -1) {
+            Spacer(Modifier.height(12.dp))
+        }
+
+        items(uiState.messages, key = { it.no }) { message ->
+            MessageCard(
+                message,
+                onCopyPressed,
+                Modifier.animateItemPlacement()
+            )
         }
     }
 }

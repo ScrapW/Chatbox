@@ -69,7 +69,12 @@ fun ChatboxApp(
                 navigateToSettings = { navController.navigate(ChatboxScreen.Settings.name) }
             )
         },
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        // When LazyColumn have animateItemPlacement() item, nestedScroll will conflict with it.
+        modifier = if (currentScreen != ChatboxScreen.Main) {
+            Modifier.nestedScroll(scrollBehavior.nestedScrollConnection)
+        } else {
+            Modifier
+        }
     ) { innerPadding ->
         val messengerUiState by chatboxViewModel.messengerUiState.collectAsState()
 
