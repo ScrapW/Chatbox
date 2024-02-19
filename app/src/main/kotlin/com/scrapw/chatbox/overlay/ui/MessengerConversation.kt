@@ -18,13 +18,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Redo
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
@@ -76,35 +73,6 @@ private fun StashedTag(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun CopyButton(message: Message, onCopyPressed: (TextFieldValue) -> Unit) {
-    IconButton(
-        modifier = Modifier.size(30.dp),
-        onClick = {
-            onCopyPressed(
-                TextFieldValue(
-                    message.content,
-                    TextRange(message.content.length)
-                )
-            )
-        }
-    ) {
-        if (!message.stashed) {
-            Icon(
-                imageVector = Icons.Default.ContentCopy,
-                contentDescription = stringResource(R.string.message_card_copy),
-                modifier = Modifier.size(20.dp)
-            )
-        } else {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.Redo,
-                contentDescription = stringResource(R.string.message_card_restore),
-                modifier = Modifier.size(20.dp)
-            )
-        }
-    }
-}
-
-@Composable
 private fun MessageCard(
     message: Message,
     onCopyPressed: (TextFieldValue) -> Unit,
@@ -125,8 +93,9 @@ private fun MessageCard(
                     TextFieldValue(
                         message.content,
                         TextRange(message.content.length)
+                    ),
+
                     )
-                )
             }
     ) {
         Column(
@@ -217,11 +186,12 @@ private fun EmptyConversationList(modifier: Modifier = Modifier) {
 @Composable
 internal fun MessengerConversation(
     uiState: ConversationUiState,
-    onCopyPressed: (TextFieldValue) -> Unit,
+    onCopyPressed: (TextFieldValue, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
     val buttonHapticState = SettingsStates.buttonHapticState()
+    val localhostState = SettingsStates.overlayLocalhost()
 
 
     Box(modifier) {
@@ -235,7 +205,7 @@ internal fun MessengerConversation(
                 ConversationList(
                     uiState = uiState,
                     onCopyPressed = {
-                        onCopyPressed(it)
+                        onCopyPressed(it, localhostState.value)
                         if (buttonHapticState.value) {
                             view.performHapticFeedback(HapticConstants.button)
                         }
@@ -263,7 +233,7 @@ fun MessengerConversationPreview() {
             ConversationUiState(
                 initialMessages = messageList.reversed()
             ),
-            {}
+            { _, _ -> }
         )
     }
 }

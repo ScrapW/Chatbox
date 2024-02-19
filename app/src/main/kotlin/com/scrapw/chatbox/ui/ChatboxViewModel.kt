@@ -110,11 +110,16 @@ class ChatboxViewModel(
     )
 
 
-    private val chatboxOSC = ChatboxOSC(
+    private val remoteChatboxOSC = ChatboxOSC(
 //        ipAddress = messengerUiState.value.ipAddress,
         ipAddress = runBlocking {
             userPreferencesRepository.ipAddress.first()
         },
+        port = 9000
+    )
+
+    private val localChatboxOSC = ChatboxOSC(
+        ipAddress = "localhost",
         port = 9000
     )
 
@@ -128,8 +133,8 @@ class ChatboxViewModel(
     fun ipAddressApply(address: String) {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.IO) {
-                chatboxOSC.ipAddress = address
-                isAddressResolvable.value = chatboxOSC.addressResolvable
+                remoteChatboxOSC.ipAddress = address
+                isAddressResolvable.value = remoteChatboxOSC.addressResolvable
             }
         }
         viewModelScope.launch {
@@ -138,7 +143,7 @@ class ChatboxViewModel(
     }
 
     fun portApply(port: Int) {
-        chatboxOSC.port = port
+        remoteChatboxOSC.port = port
         viewModelScope.launch {
             userPreferencesRepository.savePort(port)
         }
@@ -146,15 +151,54 @@ class ChatboxViewModel(
 
 
     val isAddressResolvable = mutableStateOf(true)
-    fun onMessageTextChange(message: TextFieldValue) {
+    fun onMessageTextChange(message: TextFieldValue, local: Boolean = false) {
+        val osc = if (!local) remoteChatboxOSC else localChatboxOSC
+
         messageText.value = message
         if (messengerUiState.value.isRealtimeMsg) {
-            chatboxOSC.sendRealtimeMessage(message.text)
+            osc.sendRealtimeMessage(message.text)
         } else {
             if (messengerUiState.value.isTypingIndicator) {
-                chatboxOSC.typing = message.text.isNotEmpty()
+                osc.typing = message.text.isNotEmpty()
             }
         }
+    }
+
+    fun sendMessage(local: Boolean = false) {
+        val osc = if (!local) remoteChatboxOSC else localChatboxOSC
+
+        osc.sendMessage(
+            messageText.value.text,
+            messengerUiState.value.isSendImmediately,
+            messengerUiState.value.isTriggerSFX
+        )
+        osc.typing = false
+
+        conversationUiState.addMessage(
+            Message(
+                messageText.value.text,
+                false,
+                Instant.now()
+            )
+        )
+
+        messageText.value = TextFieldValue("", TextRange.Zero)
+    }
+
+    fun stashMessage(local: Boolean = false) {
+        val osc = if (!local) remoteChatboxOSC else localChatboxOSC
+
+        osc.typing = false
+
+        conversationUiState.addMessage(
+            Message(
+                messageText.value.text,
+                true,
+                Instant.now()
+            )
+        )
+
+        messageText.value = TextFieldValue("", TextRange.Zero)
     }
 
     fun onRealtimeMsgChanged(isChecked: Boolean) {
@@ -179,40 +223,6 @@ class ChatboxViewModel(
         viewModelScope.launch {
             userPreferencesRepository.saveIsSendImmediately(isChecked)
         }
-    }
-
-    fun sendMessage() {
-        chatboxOSC.sendMessage(
-            messageText.value.text,
-            messengerUiState.value.isSendImmediately,
-            messengerUiState.value.isTriggerSFX
-        )
-        chatboxOSC.typing = false
-
-        conversationUiState.addMessage(
-            Message(
-                messageText.value.text,
-                false,
-                Instant.now()
-            )
-        )
-
-        messageText.value = TextFieldValue("", TextRange.Zero)
-    }
-
-    fun stashMessage() {
-
-        chatboxOSC.typing = false
-
-        conversationUiState.addMessage(
-            Message(
-                messageText.value.text,
-                true,
-                Instant.now()
-            )
-        )
-
-        messageText.value = TextFieldValue("", TextRange.Zero)
     }
 }
 

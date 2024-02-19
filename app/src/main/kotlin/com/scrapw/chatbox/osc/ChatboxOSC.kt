@@ -16,19 +16,22 @@ class ChatboxOSC(
     var port: Int
 ) {
 
+    val TAG: String
+        get() = "OSC@$ipAddress:$port"
+
     var addressResolvable = true
         private set
 
     var ipAddress = ipAddress
         set(value) {
-            Log.d("IP", "IP Address $field -> $value")
+            Log.d(TAG, "IP Address $field -> $value")
 
             field = value
             try {
                 inetAddress = InetAddress.getByName(value)
                 addressResolvable = true
             } catch (e: UnknownHostException) {
-                Log.d("IP", "Can't resolve $value")
+                Log.d(TAG, "Can't resolve $value")
                 addressResolvable = false
             }
         }
@@ -55,8 +58,9 @@ class ChatboxOSC(
             delay(delay)
             try {
                 sender.send(message)
+                Log.d(TAG, "Message: ${message.address}  ${message.arguments}")
             } catch (e: Exception) {
-                Log.d("OSC_Send", "Can't send OSC Message")
+                Log.e(TAG, "Failed send Message: $message")
             }
             sender.close()
         }

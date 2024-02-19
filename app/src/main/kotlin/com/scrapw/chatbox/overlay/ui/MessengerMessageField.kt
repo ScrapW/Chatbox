@@ -57,15 +57,17 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
 
     val keepOpenState = SettingsStates.overlayKeepOpen()
 
+    val localhostState = SettingsStates.overlayLocalhost()
+
     val onSend = {
-        chatboxViewModel.sendMessage()
+        chatboxViewModel.sendMessage(localhostState.value)
         if (!keepOpenState.value) {
             collapse()
         }
     }
 
     val onStash = {
-        chatboxViewModel.stashMessage()
+        chatboxViewModel.stashMessage(localhostState.value)
         if (!keepOpenState.value) {
             collapse()
         }
@@ -105,7 +107,7 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
         TextField(
             value = chatboxViewModel.messageText.value,
             onValueChange = {
-                chatboxViewModel.onMessageTextChange(it)
+                chatboxViewModel.onMessageTextChange(it, localhostState.value)
             },
             modifier = Modifier
                 .weight(1f)

@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -78,6 +79,14 @@ fun SettingsScreen(
                 icon = Icons.Default.Lock,
                 title = "Keep conversation overlay open",
                 subtitle = "Overlay does not close after sending a message.",
+                enabled = SettingsStates.overlayState().value
+            )
+
+            SettingsSwitch(
+                state = SettingsStates.overlayLocalhost(),
+                icon = Icons.Default.PhoneAndroid,
+                title = "Send to localhost",
+                subtitle = "Ignore the configured address, always send to this device.",
                 enabled = SettingsStates.overlayState().value
             )
         }

@@ -46,6 +46,15 @@ object SettingsStates {
     }
 
     @Composable
+    fun overlayLocalhost(): GenericPreferenceDataStoreSettingValueState<Boolean> {
+        return rememberPreferenceDataStoreBooleanSettingState(
+            key = "overlay_localhost",
+            defaultValue = true,
+            dataStore = LocalContext.current.dataStore
+        )
+    }
+
+    @Composable
     fun messageRealtime(): GenericPreferenceDataStoreSettingValueState<Boolean> {
         return rememberPreferenceDataStoreBooleanSettingState(
             key = "msg_realtime",
