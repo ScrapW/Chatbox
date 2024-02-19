@@ -34,9 +34,14 @@ enum class ChatboxScreen(@StringRes val title: Int) {
 @Composable
 fun ChatboxApp(
     modifier: Modifier = Modifier,
-    chatboxViewModel: ChatboxViewModel = viewModel(
-        factory = ChatboxViewModel.Factory
-    ),
+    chatboxViewModel: ChatboxViewModel =
+        if (!ChatboxViewModel.isInstanceInitialized()) {
+            viewModel(
+                factory = ChatboxViewModel.Factory
+            )
+        } else {
+            ChatboxViewModel.getInstance()
+        },
     navController: NavHostController = rememberNavController()
 
 ) {

@@ -52,13 +52,21 @@ class ChatboxViewModel(
         // https://stackoverflow.com/a/61918988
         @MainThread
         fun getInstance(): ChatboxViewModel {
-            if (!::instance.isInitialized) {
+            if (!isInstanceInitialized()) {
                 throw Exception("ChatboxViewModel is not initialized!")
             }
             Log.d("ChatboxViewModel", "getInstance()")
             return instance
         }
 
+        fun isInstanceInitialized(): Boolean {
+            return ::instance.isInitialized
+        }
+    }
+
+    override fun onCleared() {
+        Log.d("ChatboxViewModel", "onCleared()")
+        super.onCleared()
     }
 
     val conversationUiState = ConversationUiState()

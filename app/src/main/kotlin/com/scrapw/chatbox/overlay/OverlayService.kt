@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import com.scrapw.chatbox.overlay.ui.ButtonOverlay
 import com.scrapw.chatbox.overlay.ui.MessengerOverlay
@@ -47,8 +48,6 @@ class OverlayService : Service() {
     private lateinit var msgComposeView: ComposeView
 
     private val lifecycleOwner = MyLifecycleOwner()
-
-    private val chatboxViewModel = ChatboxViewModel.getInstance()
 
     private val buttonDefaultPos = Offset(1f, 0.7f)
     private val msgDefaultPos = Offset(0f, 0.1f)
@@ -86,6 +85,8 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d("Service", "onCreate()")
+
         buttonComposeView = ComposeView(this)
         msgComposeView = ComposeView(this)
 
@@ -99,6 +100,7 @@ class OverlayService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.d("Service", "onDestroy()")
 
         if (currentWindow == Window.BUTTON) {
             windowManager.removeViewImmediate(buttonComposeView)
@@ -130,6 +132,17 @@ class OverlayService : Service() {
         }
 
         msgComposeView.setContent {
+
+            val chatboxViewModel: ChatboxViewModel =
+                if (!ChatboxViewModel.isInstanceInitialized()) {
+                    viewModel(
+                        factory = ChatboxViewModel.Factory
+                    )
+                } else {
+                    ChatboxViewModel.getInstance()
+                }
+
+
             OverlayTheme {
                 MessengerOverlay(chatboxViewModel) {
                     switchOverlay(Window.BUTTON)
