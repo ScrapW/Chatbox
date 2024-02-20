@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -171,7 +170,7 @@ private fun EmptyConversationList(modifier: Modifier = Modifier) {
         Icon(
             imageVector = Icons.Rounded.History,
             contentDescription = null,
-            modifier = Modifier.size(140.dp),
+            modifier = Modifier.fillMaxSize(0.4f),
             tint = MaterialTheme.colorScheme.surfaceTint
         )
         Text(
