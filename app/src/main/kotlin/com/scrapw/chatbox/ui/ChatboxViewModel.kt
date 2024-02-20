@@ -237,7 +237,7 @@ class ChatboxViewModel(
         updateChecked = true
 
         viewModelScope.launch(Dispatchers.IO) {
-            updateInfo = checkUpdate("ScrapW", "Textfield-Issue")
+            updateInfo = checkUpdate("ScrapW", "Chatbox")
         }
     }
 }
