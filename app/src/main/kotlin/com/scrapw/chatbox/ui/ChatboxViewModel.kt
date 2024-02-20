@@ -1,7 +1,5 @@
 package com.scrapw.chatbox.ui
 
-import UpdateInfo
-import UpdateStatus
 import android.util.Log
 import androidx.annotation.MainThread
 import androidx.compose.runtime.getValue
@@ -15,8 +13,10 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import checkUpdate
 import com.scrapw.chatbox.ChatboxApplication
+import com.scrapw.chatbox.UpdateInfo
+import com.scrapw.chatbox.UpdateStatus
+import com.scrapw.chatbox.checkUpdate
 import com.scrapw.chatbox.data.UserPreferencesRepository
 import com.scrapw.chatbox.osc.ChatboxOSC
 import com.scrapw.chatbox.ui.mainScreen.ConversationUiState

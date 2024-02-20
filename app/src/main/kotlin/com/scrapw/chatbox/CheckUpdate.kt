@@ -1,6 +1,7 @@
+package com.scrapw.chatbox
+
 import android.util.Log
 import com.google.gson.annotations.SerializedName
-import com.scrapw.chatbox.BuildConfig
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

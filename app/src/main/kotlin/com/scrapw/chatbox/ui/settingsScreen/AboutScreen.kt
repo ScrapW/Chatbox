@@ -1,6 +1,5 @@
 package com.scrapw.chatbox.ui.settingsScreen
 
-import UpdateStatus
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +18,7 @@ import com.alorma.compose.settings.ui.SettingsSubGroup
 import com.alorma.compose.settings.ui.SettingsUrl
 import com.scrapw.chatbox.BuildConfig
 import com.scrapw.chatbox.R
+import com.scrapw.chatbox.UpdateStatus
 import com.scrapw.chatbox.ui.ChatboxViewModel
 
 @Composable

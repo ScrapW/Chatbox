@@ -1,6 +1,5 @@
 package com.scrapw.chatbox.ui.settingsScreen
 
-import UpdateStatus
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,6 +48,7 @@ import com.alorma.compose.settings.ui.SettingsTextFieldString
 import com.alorma.compose.settings.ui.SettingsUrl
 import com.scrapw.chatbox.ChatboxScreen
 import com.scrapw.chatbox.R
+import com.scrapw.chatbox.UpdateStatus
 import com.scrapw.chatbox.data.SettingsStates
 import com.scrapw.chatbox.ui.ChatboxViewModel
 
