@@ -1,24 +1,45 @@
 package com.scrapw.chatbox.ui.settingsScreen
 
+import UpdateStatus
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.LiveHelp
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Upgrade
 import androidx.compose.material.icons.filled.Vibration
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSubGroup
@@ -42,6 +63,8 @@ fun SettingsScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+
+        UpdateNotification(chatboxViewModel, navController)
 
         // [Address]
         SettingsSubGroup(stringResource(R.string.osc_host)) {
@@ -177,6 +200,76 @@ fun SettingsScreen(
                 url = "https://github.com/ScrapW/Chatbox",
                 useUrlAsSubtitle = false
             )
+        }
+    }
+}
+
+@Composable
+fun UpdateNotification(
+    chatboxViewModel: ChatboxViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val updateInfo = chatboxViewModel.updateInfo
+    if (chatboxViewModel.updateInfo.status == UpdateStatus.AVAILABLE && updateInfo.downloadUrl != null) {
+        Surface(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(100.dp)
+                .padding(10.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable {
+                    navController.navigate(ChatboxScreen.About.name)
+                },
+            color = MaterialTheme.colorScheme.surfaceColorAtElevation(12.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                Surface(
+                    Modifier
+                        .size(72.dp)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(12.dp)),
+                    color = MaterialTheme.colorScheme.surfaceColorAtElevation(60.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Upgrade,
+                        null,
+                        Modifier
+                            .fillMaxSize()
+                            .padding(8.dp),
+                        MaterialTheme.colorScheme.surfaceTint
+                    )
+                }
+
+                Spacer(Modifier.width(8.dp))
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+//                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text(
+                        "New version available",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.surfaceTint
+                    )
+                    Text(
+                        "${updateInfo.version}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.surfaceTint
+                    )
+                }
+                Icon(
+                    Icons.Default.ChevronRight,
+                    null,
+                    Modifier.padding(12.dp),
+                    MaterialTheme.colorScheme.surfaceTint
+                )
+            }
         }
     }
 }

@@ -1,8 +1,12 @@
 package com.scrapw.chatbox.ui
 
+import UpdateInfo
+import UpdateStatus
 import android.util.Log
 import androidx.annotation.MainThread
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
@@ -11,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import checkUpdate
 import com.scrapw.chatbox.ChatboxApplication
 import com.scrapw.chatbox.data.UserPreferencesRepository
 import com.scrapw.chatbox.osc.ChatboxOSC
@@ -222,6 +227,17 @@ class ChatboxViewModel(
     fun onSendImmediatelyChanged(isChecked: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.saveIsSendImmediately(isChecked)
+        }
+    }
+
+    private var updateChecked = false
+    var updateInfo by mutableStateOf(UpdateInfo(UpdateStatus.NOT_CHECKED))
+    fun checkUpdate() {
+        if (updateChecked) return
+        updateChecked = true
+
+        viewModelScope.launch(Dispatchers.IO) {
+            updateInfo = checkUpdate("ScrapW", "Textfield-Issue")
         }
     }
 }

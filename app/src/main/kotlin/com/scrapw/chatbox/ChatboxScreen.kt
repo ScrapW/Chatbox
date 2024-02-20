@@ -45,11 +45,11 @@ fun ChatboxApp(
     navController: NavHostController = rememberNavController()
 
 ) {
+    chatboxViewModel.checkUpdate()
 
     val fullscreenState = SettingsStates.fullscreenState()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-
     val currentScreen = ChatboxScreen.valueOf(
         backStackEntry?.destination?.route ?: ChatboxScreen.Main.name
     )
