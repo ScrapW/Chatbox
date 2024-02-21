@@ -12,18 +12,33 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.scrapw.chatbox.R
 import com.scrapw.chatbox.data.SettingsStates
 
 @Composable
 fun OverlayDaemon(context: Context) {
+    // Not a daemon at all...
+
     val state = SettingsStates.overlayState()
 
-    if (state.value) {
-        StartOverlay(context)
+    val firstTime = remember { mutableStateOf(true) }
+
+    if (firstTime.value && !Settings.canDrawOverlays(context)) {
+        Log.d("Service", "No permission at start up, cancel.")
+        state.value = false
     } else {
-        StopOverlay(context)
+        if (state.value) {
+            StartOverlay(context)
+        } else {
+            StopOverlay(context)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        firstTime.value = false
     }
 }
 
@@ -87,7 +102,6 @@ private fun CheckOverlayPermission(
             toast.show()
             result.launch(intent)
         }
-
 
     }
 }
