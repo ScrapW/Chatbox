@@ -140,6 +140,9 @@ class ChatboxViewModel(
             withContext(Dispatchers.IO) {
                 remoteChatboxOSC.ipAddress = address
                 isAddressResolvable.value = remoteChatboxOSC.addressResolvable
+                if (!isAddressResolvable.value) {
+                    ipAddressLocked = false
+                }
             }
         }
         viewModelScope.launch {

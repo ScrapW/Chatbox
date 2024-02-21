@@ -60,8 +60,6 @@ fun IpField(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-
             TextField(
                 value = uiState.ipAddress,
                 onValueChange = {
@@ -84,7 +82,6 @@ fun IpField(
                 ),
                 enabled = !locked
             )
-
 
             if (!locked) {
                 FilledTonalButton(

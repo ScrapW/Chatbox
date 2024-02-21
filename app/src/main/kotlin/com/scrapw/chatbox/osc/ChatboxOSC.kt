@@ -29,6 +29,7 @@ class ChatboxOSC(
             field = value
             try {
                 inetAddress = InetAddress.getByName(value)
+                Log.d(TAG, "Resolve to $inetAddress.address")
                 addressResolvable = true
             } catch (e: UnknownHostException) {
                 Log.d(TAG, "Can't resolve $value")
