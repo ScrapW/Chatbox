@@ -87,7 +87,7 @@ class ChatboxViewModel(
         )
 
     private val userInputIpState = MutableStateFlow<String>("")
-
+    var ipAddressLocked by mutableStateOf(false)
 
     private val ipFlow = listOf(
         storedIpState,
