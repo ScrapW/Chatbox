@@ -96,7 +96,7 @@ fun IpField(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Done,
-                        contentDescription = "Apply IP Address."
+                        contentDescription = stringResource(R.string.apply_ip_address)
                     )
                 }
             } else {
@@ -112,7 +112,7 @@ fun IpField(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Edit,
-                        contentDescription = "Edit IP Address."
+                        contentDescription = stringResource(R.string.edit_ip_address)
                     )
                 }
             }

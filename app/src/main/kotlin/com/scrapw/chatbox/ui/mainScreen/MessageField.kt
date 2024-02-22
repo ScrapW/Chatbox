@@ -78,7 +78,7 @@ fun MessageField(
                 )
             } else {
                 TextField(
-                    value = "Invalid IP address",
+                    value = stringResource(R.string.invalid_ip_address),
                     onValueChange = {},
                     modifier = Modifier
                         .weight(1f)

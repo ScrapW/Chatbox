@@ -65,7 +65,7 @@ fun AboutScreen(
         AboutUpdate(chatboxViewModel)
 
 
-        SettingsSubGroup("Project") {
+        SettingsSubGroup(stringResource(R.string.project)) {
             SettingsUrl(
                 icon = ImageVector.vectorResource(R.drawable.github_mark),
                 title = stringResource(R.string.source_code),
@@ -74,20 +74,20 @@ fun AboutScreen(
 
             SettingsUrl(
                 icon = Icons.Default.PestControl,
-                title = "Send a feedback",
+                title = stringResource(R.string.send_a_feedback),
                 url = "https://github.com/ScrapW/Chatbox/issues",
                 useUrlAsSubtitle = true
             )
 
             SettingsUrl(
                 icon = Icons.Default.Receipt,
-                title = "Release page",
+                title = stringResource(R.string.release_page),
                 url = "https://github.com/ScrapW/Chatbox/releases",
                 useUrlAsSubtitle = false
             )
         }
 
-        SettingsSubGroup("Dependencies") {
+        SettingsSubGroup(stringResource(R.string.release_page)) {
             SettingsMenuLink(
                 icon = Icons.AutoMirrored.Default.ReceiptLong,
                 title = stringResource(R.string.dependencies)
@@ -95,7 +95,7 @@ fun AboutScreen(
                 navController.navigate(ChatboxScreen.Dependencies.name)
             }
         }
-        SettingsSubGroup("License") {
+        SettingsSubGroup(stringResource(R.string.license)) {
             AboutLicense()
         }
     }
@@ -183,7 +183,7 @@ fun AboutUpdate(chatboxViewModel: ChatboxViewModel) {
     if (chatboxViewModel.updateInfo.status == UpdateStatus.AVAILABLE && updateInfo.downloadUrl != null) {
         SettingsUrl(
             icon = Icons.Default.FileDownload,
-            title = "Download latest version",
+            title = stringResource(R.string.download_latest_version),
             url = updateInfo.downloadUrl,
             subtitle = "${updateInfo.version}"
         )

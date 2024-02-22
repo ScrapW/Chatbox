@@ -49,4 +49,20 @@
     <string name="overlay_locked">Locked</string>
     <string name="overlay_unlocked">Unlocked</string>
     <string name="dependencies">Dependencies</string>
+    <string name="project">Project</string>
+    <string name="send_a_feedback">Send a feedback</string>
+    <string name="release_page">Release page</string>
+    <string name="license">License</string>
+    <string name="floating_button">Floating button</string>
+    <string name="enable_chatbox_floating_button">Enable chatbox floating button</string>
+    <string name="it_can_help_to_send_chatbox_in_vrchat_mobile_desc">It can help to send Chatbox in VRChat Mobile.</string>
+    <string name="keep_conversation_overlay_open">Keep conversation overlay open</string>
+    <string name="keep_conversation_overlay_open_desc">Overlay does not close after sending a message.</string>
+    <string name="send_to_localhost">Send to localhost</string>
+    <string name="send_to_localhost_desc">Ignore the configured address, always send to this device.</string>
+    <string name="download_latest_version">Download latest version</string>
+    <string name="update_available">Update available</string>
+    <string name="apply_ip_address">Apply IP Address.</string>
+    <string name="edit_ip_address">Edit IP Address.</string>
+    <string name="invalid_ip_address">Invalid IP address</string>
 </resources>

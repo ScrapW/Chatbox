@@ -88,28 +88,28 @@ fun SettingsScreen(
             )
         }
 
-        SettingsSubGroup("Floating button") {
+        SettingsSubGroup(stringResource(R.string.floating_button)) {
             SettingsSwitch(
                 state = SettingsStates.overlayState(),
                 icon = Icons.Default.Layers,
-                title = "Enable chatbox floating button",
-                subtitle = "It can help to send Chatbox in VRChat Mobile."
+                title = stringResource(R.string.enable_chatbox_floating_button),
+                subtitle = stringResource(R.string.it_can_help_to_send_chatbox_in_vrchat_mobile_desc)
             )
 
 
             SettingsSwitch(
                 state = SettingsStates.overlayKeepOpen(),
                 icon = Icons.Default.Lock,
-                title = "Keep conversation overlay open",
-                subtitle = "Overlay does not close after sending a message.",
+                title = stringResource(R.string.keep_conversation_overlay_open),
+                subtitle = stringResource(R.string.keep_conversation_overlay_open_desc),
                 enabled = SettingsStates.overlayState().value
             )
 
             SettingsSwitch(
                 state = SettingsStates.overlayLocalhost(),
                 icon = Icons.Default.PhoneAndroid,
-                title = "Send to localhost",
-                subtitle = "Ignore the configured address, always send to this device.",
+                title = stringResource(R.string.send_to_localhost),
+                subtitle = stringResource(R.string.send_to_localhost_desc),
                 enabled = SettingsStates.overlayState().value
             )
         }
@@ -253,12 +253,12 @@ fun UpdateNotification(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        "Update available",
+                        text = stringResource(R.string.update_available),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.surfaceTint
                     )
                     Text(
-                        "${updateInfo.version}",
+                        text = "${updateInfo.version}",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.surfaceTint
                     )
