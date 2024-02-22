@@ -1,0 +1,21 @@
+{
+	"uniqueId": "com.github.alorma:compose-settings-ui-m3",
+	"funding": [],
+	"developers": [
+		{
+			"name": "Bernat Borr\u00e1s"
+		}
+	],
+	"artifactVersion": "1.0.3",
+	"description": "Compose settings",
+	"scm": {
+		"connection": "scm:git:github.com/alorma/Compose-Settings.git",
+		"url": "https://github.com/alorma/Compose-Settings/tree/main",
+		"developerConnection": "scm:git:ssh://github.com/alorma/Compose-Settings.git"
+	},
+	"name": "compose-settings-ui-m3",
+	"website": "https://github.com/alorma/Compose-Settings",
+	"licenses": [
+		"35f12b4d307217509d69698d8a80fd16"
+	]
+}
