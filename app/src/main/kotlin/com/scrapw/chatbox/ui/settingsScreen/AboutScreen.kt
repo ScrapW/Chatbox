@@ -2,6 +2,7 @@ package com.scrapw.chatbox.ui.settingsScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ReceiptLong
@@ -27,13 +29,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.alorma.compose.settings.ui.SettingsMenuLink
 import com.alorma.compose.settings.ui.SettingsSubGroup
@@ -90,6 +95,9 @@ fun AboutScreen(
                 navController.navigate(ChatboxScreen.Dependencies.name)
             }
         }
+        SettingsSubGroup("License") {
+            AboutLicense()
+        }
     }
 }
 
@@ -124,7 +132,6 @@ fun OldAboutHeader() {
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.weight(1f)
             ) {
-
                 Text(
                     text = stringResource(R.string.app_name),
                     style = MaterialTheme.typography.headlineSmall,
@@ -143,7 +150,7 @@ fun OldAboutHeader() {
 fun AboutHeader() {
     Column(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(24.dp)
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -185,11 +192,73 @@ fun AboutUpdate(chatboxViewModel: ChatboxViewModel) {
 
 @Preview
 @Composable
-fun AboutScreenPreview() {
-    AboutScreen(
-        chatboxViewModel = viewModel(
-            factory = ChatboxViewModel.Factory
-        ),
-        navController = NavController(LocalContext.current)
-    )
+fun AboutLicense() {
+    val copyright = """
+            Chatbox: An android app to help send chatboxes to VRChat.
+            Copyright (C) 2023-2024  ScrapW
+    """.trimIndent()
+
+    val gpl3LicenseText = """
+    This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+    
+    This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License along with this program.  If not, see <https://www.gnu.org/licenses/>.
+    """.trimIndent()
+
+    val extraNotice =
+        "Notice: This license applies to the entire repo except for subfolders that have their own license file. In such cases, the license file in the subfolder takes precedence."
+
+    val licenseLink = "https://www.gnu.org/licenses/"
+
+
+    val annotatedString = buildAnnotatedString {
+        withStyle(
+            SpanStyle(
+                color = MaterialTheme.colorScheme.outline
+            )
+        ) {
+            append(copyright)
+
+            append("\n\n")
+
+            append(gpl3LicenseText.substringBefore(licenseLink))
+            pushStringAnnotation(tag = "licenses_link", annotation = licenseLink)
+            withStyle(
+                SpanStyle(
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                append(licenseLink)
+            }
+            pop()
+            append(gpl3LicenseText.substringAfter(licenseLink))
+
+            append("\n\n")
+
+            append(extraNotice)
+        }
+    }
+
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp, horizontal = 16.dp),
+    ) {
+        val uriHandler = LocalUriHandler.current
+
+        ClickableText(
+            modifier = Modifier.fillMaxWidth(),
+            text = annotatedString,
+            style = MaterialTheme.typography.bodySmall
+        ) { offset ->
+            annotatedString.getStringAnnotations(
+                tag = "licenses_link", start = offset, end = offset
+            ).firstOrNull()?.let {
+                uriHandler.openUri(it.item)
+            }
+        }
+    }
+    Spacer(Modifier.height(32.dp))
 }
