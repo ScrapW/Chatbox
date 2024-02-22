@@ -2,6 +2,8 @@ package com.scrapw.chatbox
 
 import android.util.Log
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -41,6 +43,15 @@ data class UpdateInfo(
 )
 
 suspend fun checkUpdate(owner: String, repo: String): UpdateInfo {
+
+//    if (BuildConfig.DEBUG) {
+//        return UpdateInfo(
+//            UpdateStatus.AVAILABLE,
+//            "v1.0.0 (Example version for debug)",
+//            "https://example.com"
+//        )
+//    }
+
     val retrofit = Retrofit.Builder()
         .baseUrl("https://api.github.com")
         .addConverterFactory(GsonConverterFactory.create())
@@ -49,7 +60,11 @@ suspend fun checkUpdate(owner: String, repo: String): UpdateInfo {
     val releaseService = retrofit.create(GitHubReleaseService::class.java)
 
     try {
-        val response = releaseService.getLatestRelease(owner, repo)
+        lateinit var response: Response<GitHubReleaseService.GitHubRelease>
+
+        withContext(Dispatchers.IO) {
+            response = releaseService.getLatestRelease(owner, repo)
+        }
 
         if (response.isSuccessful) {
             val data = response.body()
