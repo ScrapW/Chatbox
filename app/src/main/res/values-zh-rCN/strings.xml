@@ -16,7 +16,6 @@
     <string name="msg_send_immediately_long">直接发送</string>
     <string name="msg_send_immediately_short">直接发送</string>
     <string name="source_code">源代码</string>
-    <string name="check_updates">检查更新</string>
     <string name="osc_host">OSC 主机</string>
     <string name="ip_address">IP 地址</string>
     <string name="port">端口</string>

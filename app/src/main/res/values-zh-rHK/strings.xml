@@ -16,7 +16,6 @@
     <string name="msg_send_immediately_long">直接傳送</string>
     <string name="msg_send_immediately_short">直接傳送</string>
     <string name="source_code">原始碼</string>
-    <string name="check_updates">檢查更新</string>
     <string name="osc_host">OSC 主機</string>
     <string name="ip_address">IP 位址</string>
     <string name="port">通訊埠</string>

@@ -253,7 +253,7 @@ fun UpdateNotification(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        "New version available",
+                        "Update available",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.surfaceTint
                     )

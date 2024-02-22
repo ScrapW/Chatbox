@@ -14,10 +14,9 @@
     <string name="msg_typing_indicator_short">Indicator</string>
     <string name="msg_send_immediately_long">Send Message Immediately</string>
     <string name="msg_send_immediately_short">Direct</string>
-    <string name="source_code">Source Code</string>
-    <string name="check_updates">Check updates</string>
-    <string name="osc_host">OSC Host</string>
-    <string name="ip_address">IP Address</string>
+    <string name="source_code">Source code</string>
+    <string name="osc_host">OSC host</string>
+    <string name="ip_address">IP address</string>
     <string name="port">Port</string>
     <string name="message">Message</string>
     <string name="real_time_sending">Real-time sending</string>
@@ -49,4 +48,5 @@
     <string name="overlay_permission_request">Please allow Chatbox display over other apps.</string>
     <string name="overlay_locked">Locked</string>
     <string name="overlay_unlocked">Unlocked</string>
+    <string name="dependencies">Dependencies</string>
 </resources>
