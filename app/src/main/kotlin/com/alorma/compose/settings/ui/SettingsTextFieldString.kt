@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.compose.settings.storage.base.SettingValueState
@@ -117,11 +119,11 @@ fun SettingsTextFieldString(
     if (!showDialog) return
 
     val scrollState = rememberScrollState()
-    var inputState by remember { mutableStateOf(state.value) }
+    var inputState by remember { mutableStateOf(TextFieldValue(state.value)) }
     val focusRequester = remember { FocusRequester() }
 
     val submit: () -> Unit = {
-        state.value = inputState
+        state.value = inputState.text
         showDialog = false
         onSubmit?.invoke(state.value)
     }
@@ -144,7 +146,7 @@ fun SettingsTextFieldString(
                     value = inputState,
                     onValueChange = {
                         inputState = it
-                        onValueChanged?.invoke(inputState)
+                        onValueChanged?.invoke(inputState.text)
                     },
                     singleLine = true,
                     modifier = Modifier.focusRequester(focusRequester),
@@ -183,6 +185,7 @@ fun SettingsTextFieldString(
     )
 
     LaunchedEffect(Unit) {
+        inputState = inputState.copy(selection = TextRange(inputState.text.length))
         focusRequester.requestFocus()
     }
 }

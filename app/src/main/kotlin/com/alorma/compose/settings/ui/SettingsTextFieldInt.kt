@@ -27,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.alorma.compose.settings.storage.base.SettingValueState
@@ -114,12 +116,12 @@ fun SettingsTextFieldInt(
     if (!showDialog) return
 
     val scrollState = rememberScrollState()
-    var inputState by remember { mutableStateOf(state.value.toString()) }
+    var inputState by remember { mutableStateOf(TextFieldValue(state.value.toString())) }
     val focusRequester = remember { FocusRequester() }
 
     val submit: () -> Unit = {
         try {
-            state.value = inputState.toInt()
+            state.value = inputState.text.toInt()
         } catch (e: Exception) {
             state.value = defaultStateValue
         }
@@ -145,7 +147,7 @@ fun SettingsTextFieldInt(
                     onValueChange = {
                         inputState = it
                         try {
-                            onValueChanged?.invoke(inputState.toInt())
+                            onValueChanged?.invoke(inputState.text.toInt())
                         } catch (e: Exception) {
                             // Failed toInt(), do nothing.
                         }
@@ -188,6 +190,7 @@ fun SettingsTextFieldInt(
     )
 
     LaunchedEffect(Unit) {
+        inputState = inputState.copy(selection = TextRange(inputState.text.length))
         focusRequester.requestFocus()
     }
 }
