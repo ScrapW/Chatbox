@@ -93,8 +93,8 @@ internal fun MessengerMessageField(chatboxViewModel: ChatboxViewModel, collapse:
             ) { locked ->
                 val icon = if (locked) Icons.Default.Lock else Icons.Default.LockOpen
                 val contentDescription =
-                    if (locked) stringResource(R.string.overlay_locked)
-                    else stringResource(R.string.overlay_unlocked)
+                    if (locked) stringResource(R.string.overlay_unlock_messenger)
+                    else stringResource(R.string.overlay_lock_messenger)
                 Icon(
                     imageVector = icon,
                     contentDescription = contentDescription,
