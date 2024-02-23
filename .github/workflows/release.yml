@@ -46,4 +46,4 @@ jobs:
           generate_release_notes: true
           tag_name: ${{ steps.version.outputs.prop }}
           files: |
-            Chatbox_$GITHUB_REF_NAME.apk
+            *.apk
