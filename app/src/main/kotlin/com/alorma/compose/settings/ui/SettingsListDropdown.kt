@@ -48,7 +48,8 @@ fun SettingsListDropdown(
         var isDropdownExpanded by remember { mutableStateOf(false) }
 
         Row(
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
                 .clickable(enabled = enabled) { isDropdownExpanded = true },
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -60,7 +61,8 @@ fun SettingsListDropdown(
                 action = {
                     WrapContentColor(enabled = enabled) {
                         Column(
-                            modifier = Modifier.padding(end = 8.dp)
+                            modifier = Modifier
+                                .padding(end = 8.dp)
                                 .verticalScroll(scrollState),
                         ) {
                             Row(
