@@ -2,7 +2,6 @@ package com.scrapw.chatbox.ui.common
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -121,7 +120,8 @@ fun ChatboxAppBar(
             currentScreen = currentScreen,
             canNavigateBack = canNavigateBack,
             navigateUp = navigateUp,
-            navigateToSettings = navigateToSettings
+            navigateToSettings = navigateToSettings,
+            modifier = modifier
         )
     } else {
         return ChatboxLargeTopAppBar(
@@ -129,7 +129,8 @@ fun ChatboxAppBar(
             canNavigateBack = canNavigateBack,
             navigateUp = navigateUp,
             navigateToSettings = navigateToSettings,
-            scrollBehavior = scrollBehavior
+            scrollBehavior = scrollBehavior,
+            modifier = modifier
         )
     }
 }
