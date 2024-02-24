@@ -41,7 +41,7 @@ Chatbox is an Android app that using OSC to help players send Chatbox messages t
 ### Send messages from your phone to your PC client
 
 1. Make sure the IP address of your PC is reachable (within the same network, or your phone is connected to your PC hotspot).
-2. Set the destination IP address to your PC's IP address.
+2. Set the destination IP address to your PC's IP address. (Note: Your PC's IP address is NOT `127.0.0.1`, you have to find it on your PC!)
 3. Enable OSC function in the game
 
 > [!IMPORTANT]  
