@@ -1,6 +1,7 @@
 package com.scrapw.chatbox
 
 import android.util.Log
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -17,12 +18,14 @@ interface GitHubReleaseService {
         @Path("repo") repo: String
     ): Response<GitHubRelease>
 
+    @Keep
     data class GitHubRelease(
         @SerializedName("tag_name")
         val tagName: String,
         val assets: List<GitHubAsset>
     )
 
+    @Keep
     data class GitHubAsset(
         @SerializedName("browser_download_url")
         val browserDownloadUrl: String
