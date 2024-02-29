@@ -72,6 +72,7 @@ fun MessageField(
                     ),
                     keyboardActions = KeyboardActions(
                         onSend = {
+                            chatboxViewModel.ipAddressLocked = true
                             chatboxViewModel.sendMessage()
                         }
                     )
