@@ -55,12 +55,6 @@ Chatbox is an Android app that using OSC to help players send Chatbox messages t
 2. Set the destination IP address to `127.0.0.1` or turn on the option `Send to localhost` (recommended)
 3. Enable OSC function in the game
 
-## Known issues
-
-- Text field cursor have abnormal behavior
-
-This is a bug related to the Android Compose library. Need to wait for an upstream fix.
-
 ## FAQ
 
 ### How to enable the OSC function?
